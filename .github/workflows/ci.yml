@@ -34,6 +34,18 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-gradle-
 
+    - name: Create local.properties
+      run: |
+        if [ "${{ github.event_name }}" = "pull_request" ]; then
+          echo "base.url=https://example.com/" > local.properties
+        else
+          if [ -z "${{ secrets.BASE_URL }}" ]; then
+            echo "secrets.BASE_URL is missing. Failing the build." >&2
+            exit 1
+          fi
+          echo "base.url=${{ secrets.BASE_URL }}" > local.properties
+        fi
+
     - name: Build Android Debug APK
       run: ./gradlew assembleDebug --stacktrace
 
@@ -69,6 +81,18 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-gradle-
 
+    - name: Create local.properties
+      run: |
+        if [ "${{ github.event_name }}" = "pull_request" ]; then
+          echo "base.url=https://example.com/" > local.properties
+        else
+          if [ -z "${{ secrets.BASE_URL }}" ]; then
+            echo "secrets.BASE_URL is missing. Failing the build." >&2
+            exit 1
+          fi
+          echo "base.url=${{ secrets.BASE_URL }}" > local.properties
+        fi
+
     - name: Build iOS Framework for Simulator
       run: ./gradlew linkDebugFrameworkIosSimulatorArm64 --stacktrace
 
@@ -78,4 +102,10 @@ jobs:
     - name: Build iOS App
       run: |
         cd iosApp
-        xcodebuild -project iosApp.xcodeproj -scheme iosApp -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' build CODE_SIGNING_ALLOWED=NO
+        xcodebuild \
+        -project iosApp.xcodeproj \
+        -scheme iosApp \
+        -sdk iphonesimulator \
+        -configuration Debug \
+        -destination 'generic/platform=iOS Simulator' \
+        build CODE_SIGNING_ALLOWED=NO
