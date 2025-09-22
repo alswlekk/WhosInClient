@@ -34,6 +34,17 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-gradle-
 
+    - name: Create local.properties
+      run: |
+        if [ "${{ github.event_name }}" = "pull_request" ]; then
+          echo "base.url=https://example.com" > local.properties
+        else
+          echo "base.url=${{ secrets.BASE_URL }}" > local.properties
+          if [ ! -s local.properties ]; then
+            echo "base.url=https://example.com" > local.properties
+          fi
+        fi
+
     - name: Build Android Debug APK
       run: ./gradlew assembleDebug --stacktrace
 
@@ -68,6 +79,17 @@ jobs:
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
         restore-keys: |
           ${{ runner.os }}-gradle-
+
+    - name: Create local.properties
+      run: |
+        if [ "${{ github.event_name }}" = "pull_request" ]; then
+          echo "base.url=https://example.com" > local.properties
+        else
+          echo "base.url=${{ secrets.BASE_URL }}" > local.properties
+          if [ ! -s local.properties ]; then
+            echo "base.url=https://example.com" > local.properties
+          fi
+        fi
 
     - name: Build iOS Framework for Simulator
       run: ./gradlew linkDebugFrameworkIosSimulatorArm64 --stacktrace
