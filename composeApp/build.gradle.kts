@@ -1,7 +1,7 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -10,6 +10,20 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.buildkonfig)
+}
+
+buildkonfig {
+    packageName = "org.whosin.client"
+
+    defaultConfigs {
+        val baseUrl = gradleLocalProperties(rootDir, providers).getProperty("base.url")
+        buildConfigField(
+            com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING,
+            "BASE_URL",
+            baseUrl
+        )
+    }
 }
 
 kotlin {
