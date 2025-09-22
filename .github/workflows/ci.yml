@@ -39,10 +39,11 @@ jobs:
         if [ "${{ github.event_name }}" = "pull_request" ]; then
           echo "base.url=https://example.com" > local.properties
         else
-          echo "base.url=${{ secrets.BASE_URL }}" > local.properties
-          if [ ! -s local.properties ]; then
-            echo "base.url=https://example.com" > local.properties
+          if [ -z "${{ secrets.BASE_URL }}" ]; then
+            echo "secrets.BASE_URL is missing. Failing the build." >&2
+            exit 1
           fi
+          echo "base.url=${{ secrets.BASE_URL }}" > local.properties
         fi
 
     - name: Build Android Debug APK
@@ -85,10 +86,11 @@ jobs:
         if [ "${{ github.event_name }}" = "pull_request" ]; then
           echo "base.url=https://example.com" > local.properties
         else
-          echo "base.url=${{ secrets.BASE_URL }}" > local.properties
-          if [ ! -s local.properties ]; then
-            echo "base.url=https://example.com" > local.properties
+          if [ -z "${{ secrets.BASE_URL }}" ]; then
+            echo "secrets.BASE_URL is missing. Failing the build." >&2
+            exit 1
           fi
+          echo "base.url=${{ secrets.BASE_URL }}" > local.properties
         fi
 
     - name: Build iOS Framework for Simulator
