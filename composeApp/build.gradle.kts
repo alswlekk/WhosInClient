@@ -17,7 +17,7 @@ buildkonfig {
     packageName = "org.whosin.client"
 
     defaultConfigs {
-        val baseUrl = gradleLocalProperties(rootDir, providers).getProperty("base.url")
+        val baseUrl = gradleLocalProperties(rootDir, providers).getProperty("base.url") ?: "httpsL//example.com"
         buildConfigField(
             com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING,
             "BASE_URL",
