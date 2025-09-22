@@ -1,0 +1,8 @@
+<resources>
+    <!--    home    -->
+    <string name="current_whos_in_top">지금 %1$s의</string>
+    <string name="current_whos_in_bottom">재실자는?</string>
+    <string name="people_count">명</string>
+    <string name="current_empty">지금은 아무도 없어요.</string>
+    <string name="my_club_list_title">내 동아리/학과 목록</string>
+</resources>

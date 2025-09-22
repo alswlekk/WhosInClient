@@ -1,7 +1,7 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -10,6 +10,20 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.buildkonfig)
+}
+
+buildkonfig {
+    packageName = "org.whosin.client"
+
+    defaultConfigs {
+        val baseUrl = gradleLocalProperties(rootDir, providers).getProperty("base.url") ?: "https://example.com"
+        buildConfigField(
+            com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING,
+            "BASE_URL",
+            baseUrl
+        )
+    }
 }
 
 kotlin {
@@ -66,6 +80,7 @@ kotlin {
             implementation(libs.navigation.compose)
             // Ktor 핵심 클라이언트
             implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.logging)
             // JSON 직렬화를 위해
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
@@ -84,6 +99,9 @@ kotlin {
             implementation(libs.kotlinx.coroutinesSwing)
             // 데스크톱(JVM)용 Ktor 엔진
             implementation(libs.ktor.client.okhttp)
+        }
+        wasmJsMain.dependencies {
+             implementation(libs.ktor.client.cio)
         }
     }
 }
