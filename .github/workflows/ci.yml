@@ -37,7 +37,7 @@ jobs:
     - name: Create local.properties
       run: |
         if [ "${{ github.event_name }}" = "pull_request" ]; then
-          echo "base.url=https://example.com" > local.properties
+          echo "base.url=https://example.com/" > local.properties
         else
           if [ -z "${{ secrets.BASE_URL }}" ]; then
             echo "secrets.BASE_URL is missing. Failing the build." >&2
@@ -84,7 +84,7 @@ jobs:
     - name: Create local.properties
       run: |
         if [ "${{ github.event_name }}" = "pull_request" ]; then
-          echo "base.url=https://example.com" > local.properties
+          echo "base.url=https://example.com/" > local.properties
         else
           if [ -z "${{ secrets.BASE_URL }}" ]; then
             echo "secrets.BASE_URL is missing. Failing the build." >&2
