@@ -14,8 +14,10 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import org.whosin.client.BuildKonfig
 
 object HttpClientFactory {
+    val BASE_URL = BuildKonfig.BASE_URL
     fun create(engine: HttpClientEngine): HttpClient {
         return HttpClient(engine) {
             install(ContentNegotiation) {
@@ -37,10 +39,11 @@ object HttpClientFactory {
                         println(message)
                     }
                 }
-                level = LogLevel.ALL
+                level = LogLevel.BODY
             }
             defaultRequest {
                 contentType(ContentType.Application.Json)
+                url(BASE_URL)
             }
         }
     }
