@@ -102,4 +102,10 @@ jobs:
     - name: Build iOS App
       run: |
         cd iosApp
-        xcodebuild -project iosApp.xcodeproj -scheme iosApp -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' build CODE_SIGNING_ALLOWED=NO
+        xcodebuild \
+        -project iosApp.xcodeproj \
+        -scheme iosApp \
+        -sdk iphonesimulator \
+        -configuration Debug \
+        -destination 'generic/platform=iOS Simulator' \
+        build CODE_SIGNING_ALLOWED=NO
