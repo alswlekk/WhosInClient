@@ -90,6 +90,11 @@ kotlin {
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.koin.compose.viewmodel.navigation)
+            // svg
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network.okhttp)
+            implementation(libs.coil.network.ktor3)
+            implementation(libs.coil.svg)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
