@@ -81,7 +81,7 @@ fun NicknameInputScreen(
                 fontWeight = FontWeight.W600,
                 fontSize = 24.sp,
                 color = Color.Black,
-                modifier = Modifier.padding(bottom = 68.dp)
+                modifier = Modifier.padding(bottom = 32.dp)
             )
 
             CommonLoginInputField(
