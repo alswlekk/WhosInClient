@@ -57,11 +57,13 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
+            implementation(compose.material)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation(libs.androidx.material.icons.extended)
             // Navigation
             implementation(libs.navigation.compose)
             // Ktor 핵심 클라이언트
@@ -120,6 +122,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.material.icons.extended)
     debugImplementation(compose.uiTooling)
 }
 
