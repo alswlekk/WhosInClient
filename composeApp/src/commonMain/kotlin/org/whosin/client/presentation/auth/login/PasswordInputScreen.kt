@@ -69,7 +69,7 @@ fun PasswordInputScreen(
                     painter = painterResource(Res.drawable.ic_back),
                     contentDescription = stringResource(Res.string.back_button),
                     tint = Color.Black,
-                    modifier = Modifier.size(14.dp)
+                    modifier = Modifier.size(18.dp)
                 )
             }
 
