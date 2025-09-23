@@ -11,7 +11,7 @@ import org.whosin.client.data.repository.DummyRepository
 import org.whosin.client.data.repository.ClubRepository
 import org.whosin.client.data.repository.MemberRepository
 import org.whosin.client.presentation.dummy.DummyViewModel
-import org.whosin.client.presentation.auth.LoginViewModel
+import org.whosin.client.presentation.auth.login.viewmodel.LoginViewModel
 import org.whosin.client.presentation.home.HomeViewModel
 import org.whosin.client.presentation.mypage.MyPageViewModel
 
