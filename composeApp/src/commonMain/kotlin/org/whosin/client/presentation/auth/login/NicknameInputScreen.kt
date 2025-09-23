@@ -87,10 +87,7 @@ fun NicknameInputScreen(
             CommonLoginInputField(
                 value = nickname,
                 onValueChange = { newValue ->
-                    // 8자 제한
-                    if (newValue.length <= 8) {
-                        nickname = newValue
-                    }
+                    nickname = newValue
                 },
                 placeholder = stringResource(Res.string.nickname_input_placeholder),
                 maxLength = 8

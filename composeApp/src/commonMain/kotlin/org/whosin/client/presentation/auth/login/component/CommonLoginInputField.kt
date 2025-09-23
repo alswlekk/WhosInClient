@@ -40,7 +40,7 @@ fun CommonLoginInputField(
     val isMaxLengthReached = maxLength != null && value.length >= maxLength
     OutlinedTextField(
         value = value,
-        onValueChange = onValueChange,
+        onValueChange = { if (maxLength == null || it.length <= maxLength) onValueChange(it) },
         placeholder = {
             Text(
                 text = placeholder,
