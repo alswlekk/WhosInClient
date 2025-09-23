@@ -1,4 +1,4 @@
-package org.whosin.client.presentation.auth
+package org.whosin.client.presentation.auth.login.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

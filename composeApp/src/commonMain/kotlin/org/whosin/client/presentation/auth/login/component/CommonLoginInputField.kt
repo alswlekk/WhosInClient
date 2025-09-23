@@ -66,7 +66,7 @@ fun CommonLoginInputField(
             cursorColor = Color(0xFFB2B2B2)
         ),
         visualTransformation = if (isPassword && !passwordVisible) PasswordVisualTransformation() else VisualTransformation.None,
-        trailingIcon = if (isPassword) {
+        trailingIcon = if (isPassword && value.isNotEmpty()) {
             {
                 IconButton(
                     onClick = { passwordVisible = !passwordVisible }
