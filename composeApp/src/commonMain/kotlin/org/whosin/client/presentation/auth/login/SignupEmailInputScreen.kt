@@ -90,7 +90,7 @@ fun SignupScreen(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(horizontal = 16.dp)
-                .padding(bottom = 36.dp)
+                .padding(bottom = 52.dp)
         )
     }
 }
