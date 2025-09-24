@@ -1,6 +1,5 @@
 package org.whosin.client.presentation.home.component
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -21,13 +20,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.jetbrains.compose.resources.painterResource
+import coil3.compose.AsyncImage
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import whosinclient.composeapp.generated.resources.Res
-import whosinclient.composeapp.generated.resources.img_eyes_closed
-import whosinclient.composeapp.generated.resources.img_eyes_half_closed
-import whosinclient.composeapp.generated.resources.img_eyes_half_opened
-import whosinclient.composeapp.generated.resources.img_eyes_opened
 
 @Composable
 fun PresentMembersItem(
@@ -37,10 +32,10 @@ fun PresentMembersItem(
 ) {
     val profileImages = remember {
         listOf(
-            Res.drawable.img_eyes_opened,
-            Res.drawable.img_eyes_half_opened,
-            Res.drawable.img_eyes_closed,
-            Res.drawable.img_eyes_half_closed
+            "files/ic_eyes_opened.svg",
+            "files/ic_eyes_half_opened.svg",
+            "files/ic_eyes_closed.svg",
+            "files/ic_eyes_half_closed.svg",
         )
     }
 
@@ -75,8 +70,8 @@ fun PresentMembersItem(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Image(
-                painter = painterResource(imageRes), // 랜덤으로 선택된 이미지를 사용
+            AsyncImage(
+                model = Res.getUri(imageRes), // 랜덤으로 선택된 이미지를 사용
                 contentDescription = "profile image",
                 modifier = Modifier.height(14.dp)
             )
