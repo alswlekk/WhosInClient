@@ -79,7 +79,11 @@ fun EditMyInfoScreen(modifier: Modifier = Modifier, onNavigateBack: () -> Unit, 
             // 내 동아리 / 학과 목록
             Column(
                 modifier = Modifier.fillMaxWidth().background(Color.Gray).height(271.dp)
-            ) {  }
+            ) {
+                Text(
+                    "내 동아리 / 학과 목록"
+                )
+            }
             Spacer(modifier = Modifier.weight(1f))
             // 내 정보 수정 버튼
             MyPageButton(onClick = onNavigateToMyPage, text = stringResource(Res.string.complete_edit), enabled = nickName.isNotEmpty())

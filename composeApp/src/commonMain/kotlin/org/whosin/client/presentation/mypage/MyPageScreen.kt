@@ -32,9 +32,10 @@ import org.whosin.client.presentation.mypage.component.MyPageTopAppBar
 import whosinclient.composeapp.generated.resources.Res
 import whosinclient.composeapp.generated.resources.complete_edit
 import whosinclient.composeapp.generated.resources.edit_my_information
+import whosinclient.composeapp.generated.resources.my_information
 import whosinclient.composeapp.generated.resources.nickname
 @Composable
-fun MyPageScreen(modifier: Modifier = Modifier, onNavigateBack: () -> Unit, onNavigateToMyPage: () -> Unit) {
+fun MyPageScreen(modifier: Modifier = Modifier, onNavigateToAddClub:() -> Unit,onNavigateBack: () -> Unit, onNavigateToEdit: () -> Unit) {
     var nickName by remember { mutableStateOf("조익성") }
     Box(
         modifier = modifier.fillMaxSize().background(Color.White).padding(16.dp)
@@ -44,7 +45,7 @@ fun MyPageScreen(modifier: Modifier = Modifier, onNavigateBack: () -> Unit, onNa
         ) {
             MyPageTopAppBar(onNavigateBack)
             Text(
-                text = stringResource(Res.string.edit_my_information),
+                text = stringResource(Res.string.my_information),
                 fontSize = 24.sp,
                 color = Color.Black,
                 lineHeight = 24.sp,
@@ -80,10 +81,12 @@ fun MyPageScreen(modifier: Modifier = Modifier, onNavigateBack: () -> Unit, onNa
             // 내 동아리 / 학과 목록
             Column(
                 modifier = Modifier.fillMaxWidth().background(Color.Gray).height(271.dp)
-            ) {  }
+            ) {
+                Text(text = "내 동아리 / 학과 목록")
+            }
             Spacer(modifier = Modifier.weight(1f))
             // 내 정보 수정 버튼
-            MyPageButton(onClick = onNavigateToMyPage, text = stringResource(Res.string.complete_edit), enabled = nickName.isNotEmpty())
+            MyPageButton(onClick = onNavigateToEdit, text = stringResource(Res.string.edit_my_information), enabled = nickName.isNotEmpty())
         }
     }
 
@@ -92,6 +95,6 @@ fun MyPageScreen(modifier: Modifier = Modifier, onNavigateBack: () -> Unit, onNa
 @Preview
 @Composable
 private fun MyPageScreenPreview() {
-    MyPageScreen(onNavigateBack = {}, onNavigateToMyPage = {})
+    MyPageScreen(onNavigateBack = {}, onNavigateToEdit = {}, onNavigateToAddClub = {} )
 }
 
