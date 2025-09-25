@@ -53,9 +53,9 @@ fun WhosInNavGraph(
                 onNavigateToAddClub = {
 
                 },
-                onNavigateToEditMyInfo = {
+                onNavigateToEdit = {
                     navController.navigate(Route.UpdateMyInfo)
-                }
+                },
             )
         }
 
