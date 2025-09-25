@@ -1,0 +1,95 @@
+package org.whosin.client.presentation.mypage
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.whosin.client.presentation.mypage.component.MyPageButton
+import org.whosin.client.presentation.mypage.component.MyPageTopAppBar
+import whosinclient.composeapp.generated.resources.Res
+import whosinclient.composeapp.generated.resources.complete_edit
+import whosinclient.composeapp.generated.resources.edit_my_information
+import whosinclient.composeapp.generated.resources.nickname
+@Composable
+fun EditMyInfoScreen(modifier: Modifier = Modifier, onNavigateBack: () -> Unit, onNavigateToMyPage: () -> Unit) {
+    var nickName by remember { mutableStateOf("조익성") }
+    Box(
+        modifier = modifier.fillMaxSize().background(Color.White).padding(16.dp)
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(32.dp)
+        ) {
+            MyPageTopAppBar(onNavigateBack)
+            Text(
+                text = stringResource(Res.string.edit_my_information),
+                fontSize = 24.sp,
+                color = Color.Black,
+                lineHeight = 24.sp,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = stringResource(Res.string.nickname),
+                    fontSize = 16.sp,
+                    color = Color.Black,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(bottom = 12.dp)
+                )
+                OutlinedTextField(
+                    value = nickName,
+                    onValueChange = { nickName = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    textStyle = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Medium),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = Color(0xFFFBFBFB),
+                        unfocusedContainerColor = Color(0xFFFBFBFB),
+                        focusedBorderColor = Color(0xFFE5E5E5),
+                        unfocusedBorderColor = Color(0xFFE5E5E5),
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black
+                    ),
+                    shape = RoundedCornerShape(10.dp)
+                )
+            }
+            // 내 동아리 / 학과 목록
+            Column(
+                modifier = Modifier.fillMaxWidth().background(Color.Gray).height(271.dp)
+            ) {  }
+            Spacer(modifier = Modifier.weight(1f))
+            // 내 정보 수정 버튼
+            MyPageButton(onClick = onNavigateToMyPage, text = stringResource(Res.string.complete_edit), enabled = nickName.isNotEmpty())
+        }
+    }
+
+}
+
+@Preview
+@Composable
+private fun EditMyInfoScreenPreview() {
+    EditMyInfoScreen(onNavigateBack = {}, onNavigateToMyPage = {})
+}
