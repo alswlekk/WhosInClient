@@ -52,5 +52,5 @@
     <string name="edit_my_information">내 정보 수정하기</string>
     <string name="add">추가하기</string>
     <string name="complete_edit">수정 완료하기</string>
-    <string name="back_button">뒤로 가기</string>
+<!--    <string name="back_button">뒤로 가기</string>-->
 </resources>
