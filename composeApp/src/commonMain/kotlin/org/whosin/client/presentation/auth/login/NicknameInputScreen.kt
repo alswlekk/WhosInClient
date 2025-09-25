@@ -1,0 +1,120 @@
+package org.whosin.client.presentation.auth.login
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.whosin.client.presentation.auth.login.component.CommonLoginButton
+import org.whosin.client.presentation.auth.login.component.CommonLoginInputField
+import whosinclient.composeapp.generated.resources.Res
+import whosinclient.composeapp.generated.resources.back_button
+import whosinclient.composeapp.generated.resources.ic_back
+import whosinclient.composeapp.generated.resources.next_button
+import whosinclient.composeapp.generated.resources.nickname_input_placeholder
+import whosinclient.composeapp.generated.resources.nickname_input_title
+import whosinclient.composeapp.generated.resources.nickname_welcome_title
+
+@Composable
+fun NicknameInputScreen(
+    modifier: Modifier = Modifier,
+    onNavigateBack: () -> Unit = {},
+    onNavigateToClubCode: (String) -> Unit = {}
+) {
+    var nickname by remember { mutableStateOf("") }
+
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .padding(top = 30.dp),
+            horizontalAlignment = Alignment.Start
+        ) {
+            IconButton(
+                onClick = onNavigateBack,
+                modifier = Modifier
+                    .padding(bottom = 32.dp)
+                    .size(24.dp)
+            ) {
+                Icon(
+                    painter = painterResource(Res.drawable.ic_back),
+                    contentDescription = stringResource(Res.string.back_button),
+                    tint = Color.Black,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+
+            Text(
+                text = stringResource(Res.string.nickname_welcome_title),
+                fontWeight = FontWeight.W600,
+                fontSize = 24.sp,
+                color = Color.Black,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            Text(
+                text = stringResource(Res.string.nickname_input_title),
+                fontWeight = FontWeight.W600,
+                fontSize = 24.sp,
+                color = Color.Black,
+                modifier = Modifier.padding(bottom = 32.dp)
+            )
+
+            CommonLoginInputField(
+                value = nickname,
+                onValueChange = { newValue ->
+                    nickname = newValue
+                },
+                placeholder = stringResource(Res.string.nickname_input_placeholder),
+                maxLength = 8
+            )
+        }
+
+        // 하단 다음 버튼
+        CommonLoginButton(
+            text = stringResource(Res.string.next_button),
+            onClick = { onNavigateToClubCode(nickname) },
+            enabled = nickname.isNotBlank(),
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 52.dp)
+        )
+    }
+}
+
+@Preview
+@Composable
+fun NicknameInputScreenPreview() {
+    NicknameInputScreen(
+        modifier = Modifier,
+        onNavigateBack = {},
+        onNavigateToClubCode = { nickname ->
+            // 닉네임 처리 로직
+        }
+    )
+}
