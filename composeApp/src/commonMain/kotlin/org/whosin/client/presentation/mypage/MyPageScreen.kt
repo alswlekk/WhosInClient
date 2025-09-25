@@ -63,6 +63,7 @@ fun MyPageScreen(modifier: Modifier = Modifier, onNavigateToAddClub:() -> Unit,o
                     modifier = Modifier.padding(bottom = 12.dp)
                 )
                 OutlinedTextField(
+                    readOnly = true,
                     value = nickName,
                     onValueChange = { nickName = it },
                     modifier = Modifier.fillMaxWidth(),
