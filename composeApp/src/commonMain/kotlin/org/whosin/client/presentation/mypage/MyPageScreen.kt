@@ -14,7 +14,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun MyPageScreen(
     modifier: Modifier = Modifier,
     onNavigateBack: () -> Unit,
-    onNavigateToAddClub: () -> Unit
+    onNavigateToAddClub: () -> Unit,
+    onNavigateToModifyMyInfo: () -> Unit
 ) {
     Box(
         modifier = modifier
@@ -40,6 +41,7 @@ fun MyPageScreenPreview() {
     MyPageScreen(
         modifier = Modifier.fillMaxSize(),
         onNavigateBack = {},
-        onNavigateToAddClub = {}
+        onNavigateToAddClub = {},
+        onNavigateToModifyMyInfo = {}
     )
 }

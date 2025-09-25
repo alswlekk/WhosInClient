@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import org.whosin.client.presentation.auth.LoginScreen
 import org.whosin.client.presentation.home.HomeScreen
+import org.whosin.client.presentation.mypage.ModifyMyInfoScreen
 import org.whosin.client.presentation.mypage.MyPageScreen
 
 @Composable
@@ -51,6 +52,22 @@ fun WhosInNavGraph(
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToAddClub = {
 
+                },
+                onNavigateToModifyMyInfo = {
+                    navController.navigate(Route.UpdateMyInfo)
+                }
+            )
+        }
+
+        composable<Route.UpdateMyInfo> {
+            ModifyMyInfoScreen(
+                modifier = modifier,
+                onNavigateBack = { navController.navigateUp() },
+                onNavigateToMyPage = {
+                    navController.navigate(Route.MyPage) {
+                        popUpTo(Route.UpdateMyInfo) { inclusive = true }
+                        launchSingleTop = true
+                    }
                 }
             )
         }

@@ -17,4 +17,8 @@ sealed interface Route {
     /* 마이 페이지 */
     @Serializable
     data object MyPage: Route
+
+    /* 내 정보 수정하기 */
+    @Serializable
+    data object UpdateMyInfo: Route
 }
