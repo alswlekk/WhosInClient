@@ -46,4 +46,11 @@
     <string name="people_count">명</string>
     <string name="current_empty">지금은 아무도 없어요.</string>
     <string name="my_club_list_title">내 동아리/학과 목록</string>
+    <string name="my_information">내 정보</string>
+    <string name="nickname">닉네임</string>
+    <string name="my_club_major_list_title">내 동아리/학과 목록</string>
+    <string name="edit_my_information">내 정보 수정하기</string>
+    <string name="add">추가하기</string>
+    <string name="complete_edit">수정 완료하기</string>
+    <string name="back_button">뒤로 가기</string>
 </resources>
