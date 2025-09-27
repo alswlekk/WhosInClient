@@ -1,11 +1,9 @@
 package org.whosin.client.core.network
 
 import io.ktor.client.HttpClient
-import io.ktor.client.HttpClientConfig
 import io.ktor.client.call.body
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.HttpTimeout
-import io.ktor.client.plugins.HttpTimeoutConfig
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
@@ -21,12 +19,16 @@ import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.whosin.client.BuildKonfig
+import org.whosin.client.core.datastore.TokenManager
 import org.whosin.client.data.dto.request.ReissueTokenRequestDto
 import org.whosin.client.data.dto.response.TokenDto
 
 object HttpClientFactory {
     val BASE_URL = BuildKonfig.BASE_URL
-    fun create(engine: HttpClientEngine): HttpClient {
+    fun create(
+        engine: HttpClientEngine,
+        tokenManager: TokenManager
+    ): HttpClient {
         return HttpClient(engine) {
             install(ContentNegotiation) {
                 json(
@@ -48,7 +50,6 @@ object HttpClientFactory {
                         BearerTokens("accessToken", "refreshToken")
                     }
                     refreshTokens {
-                        // TODO: 이후에 refreshtoken을 통해 access token 재발급하는 로직 추가
                         val response = client.post("member/reissue"){
                             setBody {
                                 ReissueTokenRequestDto(
@@ -75,6 +76,7 @@ object HttpClientFactory {
             defaultRequest {
                 contentType(ContentType.Application.Json)
                 url(BASE_URL)
+                // TODO: 기본 요청 header 추가
             }
         }
     }
