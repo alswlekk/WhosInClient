@@ -16,6 +16,7 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import io.ktor.http.encodedPath
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.whosin.client.BuildKonfig
@@ -50,6 +51,30 @@ object HttpClientFactory {
                         val refreshToken = tokenManager.getRefreshToken() ?: "no_token"
                         BearerTokens(accessToken = accessToken, refreshToken = refreshToken)
                     }
+                    sendWithoutRequest { request ->
+                        val host = "https://"+request.url.host+"/"
+                        val path = request.url.encodedPath
+                        val pathWithNoAuth = listOf(
+                            "jokes",
+                            "users/signup",
+                            "users/find-password",
+                            "auth/login",
+                            "auth/email",
+                            "auth/email/validation"
+                        )
+                        // 결과가 true면 Authorization 헤더 추가, false면 제거
+                        if(host != BASE_URL){
+                            println("External API - No Auth")
+                            false
+                        }else{
+                            // pathWithNoAuth에 있는 경로에는 Authorization 헤더 제외
+                            val isNoAuthPath = pathWithNoAuth.any { noAuthPath ->
+                                path.startsWith(noAuthPath) || path.contains(noAuthPath)
+                            }
+                            println("isNoAuthPath: $isNoAuthPath")
+                            !isNoAuthPath
+                        }
+                    }
                     refreshTokens {
                         val rt = tokenManager.getRefreshToken() ?: "no_token"
                         val response = client.post("member/reissue"){
@@ -76,12 +101,11 @@ object HttpClientFactory {
                         println(message)
                     }
                 }
-                level = LogLevel.BODY
+                level = LogLevel.ALL
             }
             defaultRequest {
                 contentType(ContentType.Application.Json)
                 url(BASE_URL)
-                // TODO: 기본 요청 header 추가
             }
         }
     }

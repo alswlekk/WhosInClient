@@ -18,17 +18,17 @@ import whosinclient.composeapp.generated.resources.compose_multiplatform
 @Preview
 fun App() {
     WhosInTheme {
-//        val navController = rememberNavController()
-//
-//        WhosInNavGraph(
-//            modifier = Modifier
-//                .statusBarsPadding()
-//                .fillMaxSize(),
-//            navController = navController
-//        )
+        val navController = rememberNavController()
+
+        WhosInNavGraph(
+            modifier = Modifier
+                .statusBarsPadding()
+                .fillMaxSize(),
+            navController = navController
+        )
         // Test용으로 남겨둔 코드, 추후 삭제 예정
         // 확인하려면 위의 코드는 주석처리하고 실행
 //        DummyScreen()
-        TokenTestScreen()
+//        TokenTestScreen()
     }
 }
