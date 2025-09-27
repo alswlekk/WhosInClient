@@ -11,6 +11,7 @@ import org.whosin.client.data.repository.DummyRepository
 import org.whosin.client.data.repository.ClubRepository
 import org.whosin.client.data.repository.MemberRepository
 import org.whosin.client.presentation.dummy.DummyViewModel
+import org.whosin.client.presentation.dummy.TokenTestViewModel
 import org.whosin.client.presentation.auth.LoginViewModel
 import org.whosin.client.presentation.home.HomeViewModel
 import org.whosin.client.presentation.mypage.MyPageViewModel
@@ -47,4 +48,5 @@ val viewModelModule = module {
     viewModelOf(::HomeViewModel)
     viewModelOf(::MyPageViewModel)
     viewModelOf(::DummyViewModel) // TODO: 이후에 삭제 예정
+    viewModelOf(::TokenTestViewModel) // TODO: 이후에 삭제 예정
 }
