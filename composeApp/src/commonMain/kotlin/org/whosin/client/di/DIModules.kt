@@ -26,7 +26,7 @@ fun appModule() = listOf(
 expect val platformModule: Module
 
 val httpClientModule = module {
-    single{ HttpClientFactory.create(get()) }
+    single{ HttpClientFactory.create(get(), get()) }
 }
 
 val dataSourceModule = module {
