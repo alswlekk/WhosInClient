@@ -59,10 +59,16 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             // Android용 Ktor 엔진
             implementation(libs.ktor.client.okhttp)
+            // Datastore
+            implementation(libs.datastore)
+            implementation(libs.datastore.preferences)
         }
         iosMain.dependencies {
             // iOS, MacOS용 Ktor 엔진
             implementation(libs.ktor.client.darwin)
+            // Datastore
+            implementation(libs.datastore)
+            implementation(libs.datastore.preferences)
         }
         nativeMain.dependencies {
             // iOS, MacOS용 Ktor 엔진
@@ -84,6 +90,8 @@ kotlin {
             // Ktor 핵심 클라이언트
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.logging)
+            implementation(libs.ktor.client.auth)
+            implementation(libs.ktor.client.auth)
             // JSON 직렬화를 위해
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
@@ -106,6 +114,9 @@ kotlin {
             implementation(libs.kotlinx.coroutinesSwing)
             // 데스크톱(JVM)용 Ktor 엔진
             implementation(libs.ktor.client.okhttp)
+            // Datastore
+            implementation(libs.datastore)
+            implementation(libs.datastore.preferences)
         }
         wasmJsMain.dependencies {
             implementation(libs.ktor.client.cio)
