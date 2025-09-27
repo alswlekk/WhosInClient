@@ -46,19 +46,24 @@ object HttpClientFactory {
             install(Auth){
                 bearer {
                     loadTokens {
-                        // TODO: 이후에 datastore를 통해 토큰 가져우는 로직 추가
-                        BearerTokens("accessToken", "refreshToken")
+                        val accessToken = tokenManager.getAccessToken() ?: "no_token"
+                        val refreshToken = tokenManager.getRefreshToken() ?: "no_token"
+                        BearerTokens(accessToken = accessToken, refreshToken = refreshToken)
                     }
                     refreshTokens {
+                        val rt = tokenManager.getRefreshToken() ?: "no_token"
                         val response = client.post("member/reissue"){
                             setBody {
                                 ReissueTokenRequestDto(
-                                    refreshToken = "refreshToken"
+                                    refreshToken = rt
                                 )
                             }
                             markAsRefreshTokenRequest()
                         }.body<TokenDto>()
-                        // TODO: 이후에 datastore를 통해 토큰 저장하는 로직 추가
+                        tokenManager.saveTokens(
+                            accessToken = response.accessToken,
+                            refreshToken = response.refreshToken
+                        )
                         val accessToken = response.accessToken
                         val refreshToken = response.refreshToken
                         BearerTokens(accessToken,refreshToken)
