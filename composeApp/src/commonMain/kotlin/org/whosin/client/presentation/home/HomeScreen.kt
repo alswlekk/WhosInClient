@@ -40,6 +40,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -50,9 +51,6 @@ import org.whosin.client.presentation.home.mock.sampleUsers
 import whosinclient.composeapp.generated.resources.Res
 import whosinclient.composeapp.generated.resources.current_whos_in_bottom
 import whosinclient.composeapp.generated.resources.current_whos_in_top
-import whosinclient.composeapp.generated.resources.ic_hamburger
-import whosinclient.composeapp.generated.resources.ic_profile
-import whosinclient.composeapp.generated.resources.ic_refresh
 import whosinclient.composeapp.generated.resources.img_attend
 import whosinclient.composeapp.generated.resources.img_home_alone
 import whosinclient.composeapp.generated.resources.img_leave
@@ -117,8 +115,8 @@ fun HomeScreen(
                         .height(56.dp)
                         .padding(16.dp)
                 ) {
-                    Image(
-                        painter = painterResource(Res.drawable.ic_hamburger),
+                    AsyncImage(
+                        model = Res.getUri("files/ic_hamburger.svg"),
                         contentDescription = "Hamburger Button",
                         modifier = Modifier
                             .size(24.dp)
@@ -130,8 +128,8 @@ fun HomeScreen(
                             }
                     )
 
-                    Image(
-                        painter = painterResource(Res.drawable.ic_profile),
+                    AsyncImage(
+                        model = Res.getUri("files/ic_profile.svg"),
                         contentDescription = "MyPage Button",
                         modifier = Modifier
                             .size(24.dp)
@@ -164,8 +162,8 @@ fun HomeScreen(
                                 .padding(top = 4.dp, start = 20.dp)
                         )
 
-                        Image(
-                            painter = painterResource(Res.drawable.ic_refresh),
+                        AsyncImage(
+                            model = Res.getUri("files/ic_refresh.svg"),
                             contentDescription = "Refresh Button",
                             modifier = Modifier
                                 .padding(start = 4.dp, bottom = 3.dp)

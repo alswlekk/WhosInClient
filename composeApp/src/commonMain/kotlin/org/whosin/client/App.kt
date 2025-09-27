@@ -2,7 +2,7 @@ package org.whosin.client
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -10,8 +10,6 @@ import org.whosin.client.core.navigation.WhosInNavGraph
 import org.whosin.client.presentation.dummy.DummyScreen
 import org.whosin.client.presentation.dummy.TokenTestScreen
 import ui.theme.WhosInTheme
-import whosinclient.composeapp.generated.resources.Res
-import whosinclient.composeapp.generated.resources.compose_multiplatform
 
 
 @Composable

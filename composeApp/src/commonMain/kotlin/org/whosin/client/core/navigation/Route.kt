@@ -8,7 +8,28 @@ sealed interface Route {
     data object AuthGraph: Route
 
     @Serializable
+    data object Splash: Route
+
+    @Serializable
     data object Login: Route
+
+    @Serializable
+    data object FindPassword: Route
+
+    @Serializable
+    data object Signup: Route
+
+    @Serializable
+    data object EmailVerification: Route
+
+    @Serializable
+    data object PasswordInput: Route
+
+    @Serializable
+    data object NicknameInput: Route
+
+    @Serializable
+    data object ClubCodeInput: Route
 
     /* 메인 화면 */
     @Serializable
@@ -17,4 +38,8 @@ sealed interface Route {
     /* 마이 페이지 */
     @Serializable
     data object MyPage: Route
+
+    /* 내 정보 수정하기 */
+    @Serializable
+    data object UpdateMyInfo: Route
 }

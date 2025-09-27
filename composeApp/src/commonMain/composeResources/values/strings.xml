@@ -1,8 +1,56 @@
 <resources>
+    <!--    auth/login    -->
+    <string name="login_title">로그인</string>
+    <string name="email_label">E-mail</string>
+    <string name="password_label">password</string>
+    <string name="email_placeholder">이메일을 입력해주세요</string>
+    <string name="password_placeholder">비밀번호를 입력해주세요</string>
+    <string name="login_button">로그인</string>
+    <string name="signup_button">회원가입</string>
+    <string name="find_password_button">비밀번호 찾기</string>
+    
+    <!--    auth/signup    -->
+    <string name="signup_title">이메일을 입력해주세요.</string>
+    <string name="next_button">다음</string>
+    <string name="back_button">뒤로가기</string>
+    
+    <!--    auth/password_reset    -->
+    <string name="password_reset_title">비밀번호 찾기</string>
+    <string name="send_email_button">이메일 전송</string>
+    
+    <!--    auth/email_verification    -->
+    <string name="email_verification_title">인증번호를 입력해주세요.</string>
+    <string name="confirm_button">확인</string>
+    
+    <!--    auth/password_input    -->
+    <string name="password_input_title">비밀번호를 입력해주세요.</string>
+    <string name="password_input_label">비밀번호 입력</string>
+    <string name="password_confirm_label">비밀번호 확인</string>
+    <string name="password_input_placeholder">비밀번호 입력 (8~20자 영문, 숫자)</string>
+    <string name="password_confirm_placeholder">비밀번호 확인 (8~20자 영문, 숫자)</string>
+    
+    <!--    auth/nickname_input    -->
+    <string name="nickname_welcome_title">반가워요!</string>
+    <string name="nickname_input_title">닉네임을 입력해주세요.</string>
+    <string name="nickname_input_placeholder">닉네임을 입력해주세요</string>
+    
+    <!--    auth/club_code_input    -->
+    <string name="club_code_title_1">동아리/학과의</string>
+    <string name="club_code_title_2">고유 번호를 입력해주세요.</string>
+    <string name="club_code_error_message">고유 번호가 일치하지 않습니다.</string>
+    <string name="club_code_confirm_button">확인하기</string>
+    
     <!--    home    -->
     <string name="current_whos_in_top">지금 %1$s의</string>
     <string name="current_whos_in_bottom">재실자는?</string>
     <string name="people_count">명</string>
     <string name="current_empty">지금은 아무도 없어요.</string>
     <string name="my_club_list_title">내 동아리/학과 목록</string>
+    <string name="my_information">내 정보</string>
+    <string name="nickname">닉네임</string>
+    <string name="my_club_major_list_title">내 동아리/학과 목록</string>
+    <string name="edit_my_information">내 정보 수정하기</string>
+    <string name="add">추가하기</string>
+    <string name="complete_edit">수정 완료하기</string>
+<!--    <string name="back_button">뒤로 가기</string>-->
 </resources>

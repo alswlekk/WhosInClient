@@ -17,7 +17,8 @@ buildkonfig {
     packageName = "org.whosin.client"
 
     defaultConfigs {
-        val baseUrl = gradleLocalProperties(rootDir, providers).getProperty("base.url") ?: "https://example.com"
+        val baseUrl = gradleLocalProperties(rootDir, providers).getProperty("base.url")
+            ?: "https://example.com"
         buildConfigField(
             com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING,
             "BASE_URL",
@@ -32,7 +33,7 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -43,15 +44,15 @@ kotlin {
             isStatic = true
         }
     }
-    
+
     jvm()
-    
+
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         browser()
         binaries.executable()
     }
-    
+
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)
@@ -77,11 +78,13 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
+            implementation(compose.material)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation(compose.materialIconsExtended)
             // Navigation
             implementation(libs.navigation.compose)
             // Ktor 핵심 클라이언트
@@ -98,6 +101,10 @@ kotlin {
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.koin.compose.viewmodel.navigation)
+            // svg
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network.ktor3)
+            implementation(libs.coil.svg)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -112,7 +119,7 @@ kotlin {
             implementation(libs.datastore.preferences)
         }
         wasmJsMain.dependencies {
-             implementation(libs.ktor.client.cio)
+            implementation(libs.ktor.client.cio)
         }
     }
 }
