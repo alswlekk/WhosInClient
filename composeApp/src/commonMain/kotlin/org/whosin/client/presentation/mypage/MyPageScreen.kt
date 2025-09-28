@@ -7,14 +7,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,18 +25,44 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.whosin.client.data.dto.response.ClubData
+import org.whosin.client.presentation.mypage.component.MyClubComponent
 import org.whosin.client.presentation.mypage.component.MyPageButton
 import org.whosin.client.presentation.mypage.component.MyPageTopAppBar
 import whosinclient.composeapp.generated.resources.Res
-import whosinclient.composeapp.generated.resources.complete_edit
 import whosinclient.composeapp.generated.resources.edit_my_information
 import whosinclient.composeapp.generated.resources.my_information
 import whosinclient.composeapp.generated.resources.nickname
+
 @Composable
-fun MyPageScreen(modifier: Modifier = Modifier, onNavigateToAddClub:() -> Unit,onNavigateBack: () -> Unit, onNavigateToEdit: () -> Unit) {
+fun MyPageScreen(
+    modifier: Modifier = Modifier,
+    onNavigateToAddClub: () -> Unit,
+    onNavigateBack: () -> Unit,
+    onNavigateToEdit: () -> Unit
+) {
     var nickName by remember { mutableStateOf("조익성") }
+    val myClubs = listOf(
+        ClubData(clubId = 1, clubName = "메이커스팜"),
+        ClubData(clubId = 2, clubName = "KUIT"),
+        ClubData(clubId = 1, clubName = "메이커스팜"),
+        ClubData(clubId = 2, clubName = "KUIT"),
+        ClubData(clubId = 1, clubName = "메이커스팜"),
+        ClubData(clubId = 2, clubName = "KUIT"),
+        ClubData(clubId = 1, clubName = "메이커스팜"),
+        ClubData(clubId = 2, clubName = "KUIT"),
+        ClubData(clubId = 1, clubName = "메이커스팜"),
+        ClubData(clubId = 2, clubName = "KUIT"),
+        ClubData(clubId = 1, clubName = "메이커스팜"),
+        ClubData(clubId = 2, clubName = "KUIT"),
+        ClubData(clubId = 1, clubName = "메이커스팜"),
+        ClubData(clubId = 2, clubName = "KUIT"),
+    )
     Box(
-        modifier = modifier.fillMaxSize().background(Color.White).padding(16.dp)
+        modifier = modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .padding(16.dp)
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(32.dp)
@@ -80,14 +104,19 @@ fun MyPageScreen(modifier: Modifier = Modifier, onNavigateToAddClub:() -> Unit,o
                 )
             }
             // 내 동아리 / 학과 목록
-            Column(
-                modifier = Modifier.fillMaxWidth().background(Color.Gray).height(271.dp)
-            ) {
-                Text(text = "내 동아리 / 학과 목록")
-            }
+            MyClubComponent(
+                modifier = Modifier.fillMaxWidth(),
+                myClubs = myClubs,
+                onDeleteClub = {  },
+                onNavigateToAddClub = { onNavigateToAddClub }
+            )
             Spacer(modifier = Modifier.weight(1f))
             // 내 정보 수정 버튼
-            MyPageButton(onClick = onNavigateToEdit, text = stringResource(Res.string.edit_my_information), enabled = nickName.isNotEmpty())
+            MyPageButton(
+                onClick = onNavigateToEdit,
+                text = stringResource(Res.string.edit_my_information),
+                enabled = nickName.isNotEmpty()
+            )
         }
     }
 
@@ -96,6 +125,10 @@ fun MyPageScreen(modifier: Modifier = Modifier, onNavigateToAddClub:() -> Unit,o
 @Preview
 @Composable
 private fun MyPageScreenPreview() {
-    MyPageScreen(onNavigateBack = {}, onNavigateToEdit = {}, onNavigateToAddClub = {} )
+    MyPageScreen(
+        onNavigateBack = {},
+        onNavigateToEdit = {},
+        onNavigateToAddClub = {}
+    )
 }
 
