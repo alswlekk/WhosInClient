@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
@@ -58,7 +59,8 @@ fun MyClubComponent(
                 text = "추가하기",
                 color = Color(0xFFF89531),
                 fontFamily = pretendardFontFamily(),
-                fontSize = 16.sp
+                fontSize = 16.sp,
+                textDecoration = TextDecoration.Underline
             )
         }
         Spacer(modifier = Modifier.size(20.dp))
@@ -102,7 +104,6 @@ fun MyClubItem(
             text = clubName,
             color = Color.Black,
             fontFamily = pretendardFontFamily(),
-            fontWeight = FontWeight.SemiBold,
             fontSize = 16.sp
         )
         AsyncImage(
