@@ -33,7 +33,7 @@ import whosinclient.composeapp.generated.resources.Res
 fun MyClubComponent(
     modifier: Modifier = Modifier,
     myClubs: List<ClubData>,
-    onDeleteClub: () -> Unit,
+    onDeleteClub: (Int) -> Unit,
     onNavigateToAddClub: () -> Unit
 ) {
     Column(
@@ -76,10 +76,10 @@ fun MyClubComponent(
             items(myClubs) { clubData ->
                 MyClubItem(
                     modifier = Modifier,
-                    clubId = clubData.clubId,
                     clubName = clubData.clubName
                 ) {
-                    onDeleteClub
+                    println("clicked clubId : ${clubData.clubId}")
+                    onDeleteClub(clubData.clubId)
                 }
             }
         }
@@ -89,7 +89,6 @@ fun MyClubComponent(
 @Composable
 fun MyClubItem(
     modifier: Modifier = Modifier,
-    clubId: Int,
     clubName: String,
     onDeleteClub: () -> Unit
 ) {

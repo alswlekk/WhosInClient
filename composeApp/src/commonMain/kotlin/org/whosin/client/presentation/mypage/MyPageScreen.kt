@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.viewmodel.koinViewModel
 import org.whosin.client.data.dto.response.ClubData
 import org.whosin.client.presentation.mypage.component.MyClubComponent
 import org.whosin.client.presentation.mypage.component.MyPageButton
@@ -43,6 +44,7 @@ fun MyPageScreen(
     onNavigateBack: () -> Unit,
     onNavigateToEdit: () -> Unit
 ) {
+    val viewModel: MyPageViewModel = koinViewModel()
     var nickName by remember { mutableStateOf("조익성") }
     val myClubs = listOf(
         ClubData(clubId = 1, clubName = "메이커스팜"),
@@ -65,7 +67,7 @@ fun MyPageScreen(
             .padding(16.dp)
     ) {
         Column(
-//            verticalArrangement = Arrangement.spacedBy(32.dp)
+            modifier = Modifier.fillMaxWidth()
         ) {
             MyPageTopAppBar(onNavigateBack)
             Spacer(modifier = Modifier.size(16.dp))
@@ -113,7 +115,10 @@ fun MyPageScreen(
                     .weight(1f)
                     .padding(bottom = 72.dp),
                 myClubs = myClubs,
-                onDeleteClub = {  },
+                onDeleteClub = {
+                    // TODO: 동아리 삭제
+//                    viewModel.deleteClub(it)
+                },
                 onNavigateToAddClub = { onNavigateToAddClub }
             )
         }
