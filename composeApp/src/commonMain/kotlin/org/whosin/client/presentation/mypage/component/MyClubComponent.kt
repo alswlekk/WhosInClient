@@ -5,8 +5,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -57,21 +57,20 @@ fun MyClubComponent(
             fontSize = 16.sp
         )
     }
-    Spacer(modifier = Modifier.size(20.dp))
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 16.dp)
             .border(
                 width = 1.dp,
                 color = Color(0xFFE5E5E5),
                 shape = RoundedCornerShape(20.dp)
             ),
+        contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         items(myClubs) { clubData ->
             MyClubItem(
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier,
                 clubId = clubData.clubId,
                 clubName = clubData.clubName
             ) {
@@ -89,7 +88,8 @@ fun MyClubItem(
     onDeleteClub: () -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
