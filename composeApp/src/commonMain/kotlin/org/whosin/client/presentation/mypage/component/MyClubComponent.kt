@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -35,46 +36,51 @@ fun MyClubComponent(
     onDeleteClub: () -> Unit,
     onNavigateToAddClub: () -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = "내 동아리/학과 목록",
-            color = Color.Black,
-            fontFamily = pretendardFontFamily(),
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 16.sp
-        )
-        Text(
+    Column(
+        modifier = modifier
+    ){
+        Row(
             modifier = Modifier
-                .clickable(onClick = onNavigateToAddClub),
-            text = "추가하기",
-            color = Color(0xFFF89531),
-            fontFamily = pretendardFontFamily(),
-            fontSize = 16.sp
-        )
-    }
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxWidth()
-            .border(
-                width = 1.dp,
-                color = Color(0xFFE5E5E5),
-                shape = RoundedCornerShape(20.dp)
-            ),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
-    ) {
-        items(myClubs) { clubData ->
-            MyClubItem(
-                modifier = Modifier,
-                clubId = clubData.clubId,
-                clubName = clubData.clubName
-            ) {
-                onDeleteClub
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "내 동아리/학과 목록",
+                color = Color.Black,
+                fontFamily = pretendardFontFamily(),
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 16.sp
+            )
+            Text(
+                modifier = Modifier
+                    .clickable(onClick = onNavigateToAddClub),
+                text = "추가하기",
+                color = Color(0xFFF89531),
+                fontFamily = pretendardFontFamily(),
+                fontSize = 16.sp
+            )
+        }
+        Spacer(modifier = Modifier.size(20.dp))
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(
+                    width = 1.dp,
+                    color = Color(0xFFE5E5E5),
+                    shape = RoundedCornerShape(20.dp)
+                ),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            items(myClubs) { clubData ->
+                MyClubItem(
+                    modifier = Modifier,
+                    clubId = clubData.clubId,
+                    clubName = clubData.clubName
+                ) {
+                    onDeleteClub
+                }
             }
         }
     }

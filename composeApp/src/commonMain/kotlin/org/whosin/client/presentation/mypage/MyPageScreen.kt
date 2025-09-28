@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -17,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -55,8 +57,6 @@ fun MyPageScreen(
         ClubData(clubId = 2, clubName = "KUIT"),
         ClubData(clubId = 1, clubName = "메이커스팜"),
         ClubData(clubId = 2, clubName = "KUIT"),
-        ClubData(clubId = 1, clubName = "메이커스팜"),
-        ClubData(clubId = 2, clubName = "KUIT"),
     )
     Box(
         modifier = modifier
@@ -65,9 +65,10 @@ fun MyPageScreen(
             .padding(16.dp)
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(32.dp)
+//            verticalArrangement = Arrangement.spacedBy(32.dp)
         ) {
             MyPageTopAppBar(onNavigateBack)
+            Spacer(modifier = Modifier.size(16.dp))
             Text(
                 text = stringResource(Res.string.my_information),
                 fontSize = 24.sp,
@@ -76,6 +77,7 @@ fun MyPageScreen(
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.fillMaxWidth()
             )
+            Spacer(modifier = Modifier.size(32.dp))
             Column(
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -103,21 +105,26 @@ fun MyPageScreen(
                     shape = RoundedCornerShape(10.dp)
                 )
             }
+            Spacer(modifier = Modifier.size(32.dp))
             // 내 동아리 / 학과 목록
             MyClubComponent(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(bottom = 72.dp),
                 myClubs = myClubs,
                 onDeleteClub = {  },
                 onNavigateToAddClub = { onNavigateToAddClub }
             )
-            Spacer(modifier = Modifier.weight(1f))
-            // 내 정보 수정 버튼
-            MyPageButton(
-                onClick = onNavigateToEdit,
-                text = stringResource(Res.string.edit_my_information),
-                enabled = nickName.isNotEmpty()
-            )
         }
+        
+        // 내 정보 수정 버튼 - 하단에 고정
+        MyPageButton(
+            onClick = onNavigateToEdit,
+            text = stringResource(Res.string.edit_my_information),
+            enabled = nickName.isNotEmpty(),
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 
 }
