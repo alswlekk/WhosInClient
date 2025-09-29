@@ -119,7 +119,7 @@ fun MyPageScreen(
                     // TODO: 동아리 삭제
 //                    viewModel.deleteClub(it)
                 },
-                onNavigateToAddClub = { onNavigateToAddClub }
+                onNavigateToAddClub =  onNavigateToAddClub
             )
         }
         
