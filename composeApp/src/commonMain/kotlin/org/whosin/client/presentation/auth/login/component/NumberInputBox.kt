@@ -70,14 +70,17 @@ fun NumberInputBox(
             value = textFieldValue,
             onValueChange = { newValue ->
                 val cleaned = newValue.text.replace("\u200B", "")
-                val filtered = cleaned.filter { it.isDigit() }.take(1)
-
+                val filtered = cleaned.filter { it.isDigit() }
                 if (newValue.text.isEmpty() && value.isEmpty()) {
                     onBackspace?.invoke()
                     return@BasicTextField
                 }
-
-                onValueChange(filtered)
+                
+                if (filtered.isNotEmpty()) {
+                    onValueChange(filtered.last().toString())
+                } else {
+                    onValueChange("")
+                }
             },
             textStyle = textStyle.copy(
                 color = if (value.isEmpty()) Color.Transparent else Color.Black
