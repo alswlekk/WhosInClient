@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,7 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
-import org.jetbrains.compose.resources.painterResource
+import coil3.compose.AsyncImage
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.whosin.client.presentation.auth.login.component.CommonLoginButton
@@ -45,7 +44,6 @@ import whosinclient.composeapp.generated.resources.club_code_error_message
 import whosinclient.composeapp.generated.resources.club_code_title_1
 import whosinclient.composeapp.generated.resources.club_code_title_2
 import whosinclient.composeapp.generated.resources.confirm_button
-import whosinclient.composeapp.generated.resources.ic_back
 
 
 @Composable
@@ -108,10 +106,9 @@ fun ClubCodeInputScreen(
                     .padding(bottom = 32.dp)
                     .size(24.dp)
             ) {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_back),
+                AsyncImage(
+                    model = Res.getUri("files/ic_back.svg"),
                     contentDescription = stringResource(Res.string.back_button),
-                    tint = Color.Black,
                     modifier = Modifier.size(18.dp)
                 )
             }
