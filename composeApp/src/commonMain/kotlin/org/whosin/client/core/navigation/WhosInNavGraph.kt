@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import androidx.navigation.toRoute
 import org.whosin.client.presentation.auth.clubcode.ClubCodeInputScreen
 import org.whosin.client.presentation.auth.login.EmailVerificationScreen
 import org.whosin.client.presentation.auth.login.LoginScreen
@@ -74,15 +75,17 @@ fun WhosInNavGraph(
                     modifier = modifier,
                     onNavigateBack = { navController.navigateUp() },
                     onNavigateToEmailVerification = { email ->
-                        navController.navigate(Route.EmailVerification)
+                        navController.navigate(Route.EmailVerification(email))
                     }
                 )
             }
             
             composable<Route.EmailVerification> { backStackEntry ->
+                val emailVerificationRoute = backStackEntry.toRoute<Route.EmailVerification>()
                 
                 EmailVerificationScreen(
                     modifier = modifier,
+                    email = emailVerificationRoute.email,
                     onNavigateBack = { navController.navigateUp() },
                     onVerificationComplete = {
                         navController.navigate(Route.PasswordInput)

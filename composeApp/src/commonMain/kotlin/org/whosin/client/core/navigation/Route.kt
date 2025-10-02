@@ -20,7 +20,7 @@ sealed interface Route {
     data object Signup: Route
 
     @Serializable
-    data object EmailVerification: Route
+    data class EmailVerification(val email: String): Route
 
     @Serializable
     data object PasswordInput: Route
