@@ -127,7 +127,6 @@ fun WhosInNavGraph(
         composable<Route.Home> {
             HomeScreen(
                 modifier = modifier,
-                onNavigateBack = { navController.navigateUp() },
                 onNavigateToMyPage = {
                     navController.navigate(Route.MyPage)
                 }

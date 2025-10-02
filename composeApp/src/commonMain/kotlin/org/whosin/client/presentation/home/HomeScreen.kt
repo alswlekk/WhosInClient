@@ -238,10 +238,11 @@ fun HomeScreen(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .clickable(
+                        enabled = !uiState.isToggleLoading,
                         interactionSource = remember { MutableInteractionSource() },
-                        indication = null // 클릭 효과 제거
+                        indication = null
                     ) {
-//                        viewModel.toggleAttendance() // TODO: api 연결
+                        viewModel.toggleAttendance()
                     },
                 transitionSpec = {
                     fadeIn(animationSpec = tween(1000)) togetherWith
