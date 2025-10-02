@@ -23,6 +23,7 @@ data class PresentMemberUi(
 data class HomeUiState(
     val isClubsLoading: Boolean = true,
     val isMembersLoading: Boolean = false,
+    val isToggleLoading: Boolean = false,
     val clubs: List<ClubUi> = emptyList(),
     val selectedClub: ClubUi? = null,
     val selectedClubName: String? = null,
@@ -102,6 +103,39 @@ class HomeViewModel(
                     }
                 }
             }
+        }
+    }
+
+    fun toggleAttendance() {
+        val currentState = _uiState.value
+        // 클럽이 선택되지 않았거나, 이미 출석/퇴실 요청이 진행 중이면 아무것도 하지 않음
+        val clubId = currentState.selectedClub?.id ?: return
+        if (currentState.isToggleLoading) return
+
+        viewModelScope.launch {
+            // 버튼 로딩 상태 시작
+            _uiState.update { it.copy(isToggleLoading = true, errorMessage = null) }
+
+            // 현재 출석 상태에 따라 checkOut 또는 checkIn 호출
+            val result = if (currentState.isAttending) {
+                clubRepository.checkOut(clubId)
+            } else {
+                clubRepository.checkIn(clubId)
+            }
+
+            when (result) {
+                is ApiResult.Success -> {
+                    // 성공 시, 재실자 목록을 새로고침하여 최신 상태를 반영
+                    loadPresentMembers(clubId)
+                }
+                is ApiResult.Error -> {
+                    // 실패 시, 에러 메시지 표시
+                    _uiState.update { it.copy(errorMessage = result.message ?: "요청에 실패했습니다.") }
+                }
+            }
+
+            // 버튼 로딩 상태 종료
+            _uiState.update { it.copy(isToggleLoading = false) }
         }
     }
 }
