@@ -13,4 +13,10 @@ class ClubRepository(
 
     suspend fun getPresentMembers(clubId: Int): ApiResult<ClubPresencesResponseDto> =
         dataSource.getPresentMembers(clubId)
+
+    suspend fun checkIn(clubId: Int): ApiResult<Unit> =
+        dataSource.checkIn(clubId)
+
+    suspend fun checkOut(clubId: Int): ApiResult<Unit> =
+        dataSource.checkOut(clubId)
 }
