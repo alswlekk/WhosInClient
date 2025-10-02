@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
@@ -61,15 +62,12 @@ import whosinclient.composeapp.generated.resources.people_count
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    onNavigateBack: () -> Unit,
     onNavigateToMyPage: () -> Unit,
     viewModel: HomeViewModel = koinViewModel()
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    var isAttending by remember { mutableStateOf(true) }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -89,6 +87,7 @@ fun HomeScreen(
                         uiState.clubs.find { it.name == clubName }?.let {
                             viewModel.onClubSelected(it)
                         }
+                        scope.launch { drawerState.close() }
                     },
                     onClose = {
                         scope.launch { drawerState.close() }
@@ -172,7 +171,7 @@ fun HomeScreen(
                             modifier = Modifier
                                 .padding(start = 4.dp, bottom = 3.dp)
                                 .size(24.dp)
-//                        .clickable(onClick = onNavigateToMyPage)
+                                .clickable { viewModel.refresh() }
                         )
                     }
                 }
@@ -182,13 +181,17 @@ fun HomeScreen(
                     verticalAlignment = Alignment.Bottom,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Text(
-                        text = sampleUsers.size.toString(), // TODO: 데이터 적용
-                        color = Color.Black,
-                        fontSize = 45.sp,
-                        lineHeight = 67.5.sp,
-                        fontWeight = FontWeight(700)
-                    )
+                    if (uiState.isClubsLoading || uiState.isMembersLoading) {
+                        CircularProgressIndicator(modifier = Modifier.size(45.dp))
+                    } else {
+                        Text(
+                            text = uiState.presentMembers.size.toString(),
+                            color = Color.Black,
+                            fontSize = 45.sp,
+                            lineHeight = 67.5.sp,
+                            fontWeight = FontWeight(700)
+                        )
+                    }
 
                     Text(
                         text = stringResource(Res.string.people_count),
@@ -217,19 +220,28 @@ fun HomeScreen(
                         .padding(top = 20.dp, start = 16.dp, end = 16.dp, bottom = 118.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    PresentMembersList(presentMemberList = sampleUsers)
+                    when {
+                        uiState.errorMessage != null -> {
+                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                Text(text = uiState.errorMessage!!)
+                            }
+                        }
+                        else -> {
+                            PresentMembersList(presentMemberList = uiState.presentMembers)
+                        }
+                    }
                 }
             }
 
             AnimatedContent(
-                targetState = isAttending,
+                targetState = uiState.isAttending,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null // 클릭 효과 제거
                     ) {
-                        isAttending = !isAttending
+//                        viewModel.toggleAttendance() // TODO: api 연결
                     },
                 transitionSpec = {
                     fadeIn(animationSpec = tween(1000)) togetherWith
@@ -258,7 +270,6 @@ fun HomeScreen(
 fun HomeScreenPreview() {
     HomeScreen(
         modifier = Modifier.fillMaxSize(),
-        onNavigateBack = {},
         onNavigateToMyPage = {}
     )
 }
