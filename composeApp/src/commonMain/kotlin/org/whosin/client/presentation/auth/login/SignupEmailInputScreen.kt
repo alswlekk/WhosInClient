@@ -25,6 +25,11 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.whosin.client.presentation.auth.login.component.CommonLoginButton
 import org.whosin.client.presentation.auth.login.component.CommonLoginInputField
+import org.whosin.client.data.repository.MemberRepository
+import org.whosin.client.core.network.ApiResult
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 import whosinclient.composeapp.generated.resources.Res
 import whosinclient.composeapp.generated.resources.back_button
 import whosinclient.composeapp.generated.resources.email_placeholder
@@ -38,6 +43,10 @@ fun SignupScreen(
     onNavigateToEmailVerification: (String) -> Unit = {}
 ) {
     var email by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
+    
+    val memberRepository: MemberRepository = koinInject()
+    val coroutineScope = rememberCoroutineScope()
 
     Box(
         modifier = modifier
@@ -81,8 +90,24 @@ fun SignupScreen(
 
         CommonLoginButton(
             text = stringResource(Res.string.next_button),
-            onClick = { onNavigateToEmailVerification(email) },
-            enabled = email.isNotBlank(),
+            onClick = {
+                if (email.isNotBlank() && !isLoading) {
+                    isLoading = true
+                    
+                    coroutineScope.launch {
+                        when (memberRepository.sendEmailVerification(email)) {
+                            is ApiResult.Success -> {
+                                isLoading = false
+                                onNavigateToEmailVerification(email)
+                            }
+                            is ApiResult.Error -> {
+                                isLoading = false
+                            }
+                        }
+                    }
+                }
+            },
+            enabled = email.isNotBlank() && !isLoading,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(horizontal = 16.dp)
