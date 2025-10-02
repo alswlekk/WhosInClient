@@ -1,9 +1,12 @@
 package org.whosin.client.data.repository
 
+import org.whosin.client.core.network.ApiResult
+import org.whosin.client.data.dto.response.MyClubResponseDto
 import org.whosin.client.data.remote.RemoteClubDataSource
 
 class ClubRepository(
     private val dataSource: RemoteClubDataSource
 ) {
-
+    suspend fun getMyClubs(): ApiResult<MyClubResponseDto> =
+        dataSource.getMyClubs()
 }
