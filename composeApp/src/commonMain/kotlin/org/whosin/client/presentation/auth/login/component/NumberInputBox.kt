@@ -2,6 +2,7 @@ package org.whosin.client.presentation.auth.login.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -35,6 +36,7 @@ fun NumberInputBox(
     onValueChange: (String) -> Unit,
     onBackspace: (() -> Unit)? = null,
     onFocusChanged: ((Boolean) -> Unit)? = null,
+    onClick: (() -> Unit)? = null,
     containerColor: Color = Color.White,
     borderColor: Color = Color(0xFFE5E5E5),
     focusedBorderColor: Color = Color(0xFFF89531),
@@ -63,7 +65,8 @@ fun NumberInputBox(
         modifier = modifier
             .size(width = 50.dp, height = 54.dp)
             .background(containerColor, RoundedCornerShape(8.dp))
-            .border(1.dp, currentBorderColor, RoundedCornerShape(8.dp)),
+            .border(1.dp, currentBorderColor, RoundedCornerShape(8.dp))
+            .clickable { onClick?.invoke() },
         contentAlignment = Alignment.Center
     ) {
         BasicTextField(
@@ -87,13 +90,17 @@ fun NumberInputBox(
             ),
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            cursorBrush = SolidColor(Color(0xFFB2B2B2)),
-            modifier = Modifier.onFocusChanged { focusState ->
-                onFocusChanged?.invoke(focusState.isFocused)
-            },
+            cursorBrush = SolidColor(Color.Transparent),
+            modifier = Modifier
+                .fillMaxSize()
+                .onFocusChanged { focusState ->
+                    onFocusChanged?.invoke(focusState.isFocused)
+                },
             decorationBox = { innerTextField ->
                 Box(
-                    Modifier.fillMaxSize(),
+                    Modifier
+                        .fillMaxSize()
+                        .clickable { onClick?.invoke() },
                     contentAlignment = Alignment.Center
                 ) {
                     innerTextField()
