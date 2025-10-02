@@ -40,11 +40,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.viewmodel.koinViewModel
 import org.whosin.client.presentation.home.component.MyClubSidebar
 import org.whosin.client.presentation.home.component.PresentMembersList
 import org.whosin.client.presentation.home.mock.sampleUsers
@@ -61,14 +63,13 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     onNavigateBack: () -> Unit,
     onNavigateToMyPage: () -> Unit,
+    viewModel: HomeViewModel = koinViewModel()
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     var isAttending by remember { mutableStateOf(true) }
-    val clubs = listOf("메이커스팜", "목방", "건대교지편집위원회", "국어국문학과", "컴퓨터공학부")
-
-    var selectedClub by remember { mutableStateOf(clubs.first()) }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -81,10 +82,13 @@ fun HomeScreen(
             ) {
                 MyClubSidebar(
                     modifier = Modifier.height(325.dp),
-                    clubs = clubs,
-                    selectedClub = selectedClub,
-                    onClubSelected = { newClub ->
-                        selectedClub = newClub
+                    clubs = uiState.clubs.map { it.name },
+                    selectedClub = uiState.selectedClub?.name ?: "",
+                    onClubSelected = { clubName ->
+                        // 이름으로 다시 ClubUi 객체 찾기
+                        uiState.clubs.find { it.name == clubName }?.let {
+                            viewModel.onClubSelected(it)
+                        }
                     },
                     onClose = {
                         scope.launch { drawerState.close() }
@@ -140,7 +144,7 @@ fun HomeScreen(
 
                 Column {
                     Text(
-                        text = stringResource(Res.string.current_whos_in_top, selectedClub),
+                        text = stringResource(Res.string.current_whos_in_top, uiState.selectedClub?.name ?: "..."),
                         color = Color.Black,
                         fontSize = 20.sp,
                         lineHeight = 32.sp,
