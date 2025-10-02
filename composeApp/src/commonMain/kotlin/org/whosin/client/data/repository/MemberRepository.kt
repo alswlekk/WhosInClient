@@ -14,4 +14,7 @@ class MemberRepository(
     suspend fun sendEmailVerification(email: String): ApiResult<EmailVerificationResponseDto> =
         dataSource.sendEmailVerification(email)
 
+    suspend fun validateEmailCode(email: String, authCode: String): ApiResult<EmailVerificationResponseDto> =
+        dataSource.validateEmailCode(email, authCode)
+
 }
