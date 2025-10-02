@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -113,6 +114,16 @@ fun SignupScreen(
                 .padding(horizontal = 16.dp)
                 .padding(bottom = 52.dp)
         )
+        
+        // 로딩 인디케이터
+        if (isLoading) {
+            CircularProgressIndicator(
+                color = Color(0xFFF89531),
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .size(48.dp)
+            )
+        }
     }
 }
 
