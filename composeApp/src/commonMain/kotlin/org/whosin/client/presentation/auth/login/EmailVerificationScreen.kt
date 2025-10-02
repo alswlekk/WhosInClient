@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,7 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
-import org.jetbrains.compose.resources.painterResource
+import coil3.compose.AsyncImage
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.whosin.client.presentation.auth.login.component.CommonLoginButton
@@ -38,7 +37,6 @@ import whosinclient.composeapp.generated.resources.Res
 import whosinclient.composeapp.generated.resources.back_button
 import whosinclient.composeapp.generated.resources.confirm_button
 import whosinclient.composeapp.generated.resources.email_verification_title
-import whosinclient.composeapp.generated.resources.ic_back
 
 @Composable
 fun EmailVerificationScreen(
@@ -86,10 +84,9 @@ fun EmailVerificationScreen(
                     .padding(bottom = 32.dp)
                     .size(24.dp)
             ) {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_back),
+                AsyncImage(
+                    model = Res.getUri("files/ic_back.svg"),
                     contentDescription = stringResource(Res.string.back_button),
-                    tint = Color.Black,
                     modifier = Modifier.size(18.dp)
                 )
             }
@@ -123,6 +120,8 @@ fun EmailVerificationScreen(
                                 } else if (input.isEmpty() && !wasEmpty && index > 0) {
                                     currentFocusIndex = index - 1
                                     focusRequesters[index - 1].requestFocus()
+                                } else if (input.isNotEmpty()) {
+                                    currentFocusIndex = index
                                 }
                             }
                         },
