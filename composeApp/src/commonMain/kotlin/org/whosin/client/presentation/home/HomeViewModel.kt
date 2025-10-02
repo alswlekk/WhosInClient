@@ -15,11 +15,18 @@ data class ClubUi(
     val name: String
 )
 
+data class PresentMemberUi(
+    val userName: String,
+    val isMe: Boolean
+)
+
 data class HomeUiState(
     val isClubsLoading: Boolean = true,
     val isMembersLoading: Boolean = false,
     val clubs: List<ClubUi> = emptyList(),
     val selectedClub: ClubUi? = null,
+    val selectedClubName: String? = null,
+    val presentMembers: List<PresentMemberUi> = emptyList(),
     val isAttending: Boolean = false,
     val errorMessage: String? = null
 )
@@ -54,7 +61,47 @@ class HomeViewModel(
     }
 
     fun onClubSelected(club: ClubUi) {
-        _uiState.update { it.copy(selectedClub = club) }
-//        loadPresentMembers(club.id)
+        _uiState.update { it.copy(selectedClub = club, presentMembers = emptyList()) } // 클럽 변경 시 멤버 목록 초기화
+        loadPresentMembers(club.id)
+    }
+
+    fun refresh() {
+        _uiState.value.selectedClub?.id?.let {
+            loadPresentMembers(it)
+        }
+    }
+
+    private fun loadPresentMembers(clubId: Int) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isMembersLoading = true, errorMessage = null) }
+
+            when (val result = clubRepository.getPresentMembers(clubId)) {
+                is ApiResult.Success -> {
+                    val responseData = result.data.data
+                    val membersUi = responseData.presentMembers.map { dto ->
+                        PresentMemberUi(userName = dto.userName, isMe = dto.isMe)
+                    }
+
+                    val amIAttending = membersUi.any { it.isMe }
+
+                    _uiState.update {
+                        it.copy(
+                            isMembersLoading = false,
+                            selectedClubName = responseData.clubName,
+                            presentMembers = membersUi,
+                            isAttending = amIAttending
+                        )
+                    }
+                }
+                is ApiResult.Error -> {
+                    _uiState.update {
+                        it.copy(
+                            isMembersLoading = false,
+                            errorMessage = result.message ?: "재실자 명단을 불러오지 못했습니다."
+                        )
+                    }
+                }
+            }
+        }
     }
 }
