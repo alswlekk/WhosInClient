@@ -6,6 +6,7 @@ import io.ktor.client.request.get
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.isSuccess
 import org.whosin.client.core.network.ApiResult
+import org.whosin.client.data.dto.response.ClubPresencesResponseDto
 import org.whosin.client.data.dto.response.MyClubResponseDto
 
 class RemoteClubDataSource(
@@ -14,6 +15,26 @@ class RemoteClubDataSource(
     suspend fun getMyClubs(): ApiResult<MyClubResponseDto> {
         return try {
             val response: HttpResponse = client.get(urlString = "clubs/my")
+
+            if (response.status.isSuccess()) {
+                ApiResult.Success(
+                    data = response.body(),
+                    statusCode = response.status.value
+                )
+            } else {
+                ApiResult.Error(
+                    code = response.status.value,
+                    message = "HTTP Error: ${response.status.value}"
+                )
+            }
+        } catch (t: Throwable) {
+            ApiResult.Error(message = t.message, cause = t)
+        }
+    }
+
+    suspend fun getPresentMembers(clubId: Int): ApiResult<ClubPresencesResponseDto> {
+        return try {
+            val response: HttpResponse = client.get(urlString = "clubs/$clubId/presences")
 
             if (response.status.isSuccess()) {
                 ApiResult.Success(
