@@ -29,12 +29,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import org.whosin.client.presentation.component.CommonBackHandler
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -50,7 +49,6 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.whosin.client.presentation.home.component.MyClubSidebar
 import org.whosin.client.presentation.home.component.PresentMembersList
-import org.whosin.client.presentation.home.mock.sampleUsers
 import whosinclient.composeapp.generated.resources.Res
 import whosinclient.composeapp.generated.resources.current_whos_in_bottom
 import whosinclient.composeapp.generated.resources.current_whos_in_top
@@ -68,6 +66,12 @@ fun HomeScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    CommonBackHandler(enabled = drawerState.isOpen) {
+        scope.launch {
+            drawerState.close()
+        }
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
