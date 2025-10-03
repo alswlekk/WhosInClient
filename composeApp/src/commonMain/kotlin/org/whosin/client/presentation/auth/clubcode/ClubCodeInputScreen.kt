@@ -186,7 +186,7 @@ fun ClubCodeInputScreen(
             // 에러 메시지
             if (currentState == ClubCodeState.ERROR) {
                 Text(
-                    text = stringResource(Res.string.club_code_error_message),
+                    text = uiState.errorMessage?:"예상치 못한 오류가 발생했습니다",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.W500,
                     color = Color(0xFFFF3636),
