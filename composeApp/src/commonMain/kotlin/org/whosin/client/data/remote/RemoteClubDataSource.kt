@@ -135,7 +135,7 @@ class RemoteClubDataSource(
     // 동아리 추가 함수
     suspend fun addClub(clubId: Int): ApiResult<AddClubResponseDto> {
         return try {
-            val response: HttpResponse = client.get(urlString = "clubs/$clubId")
+            val response: HttpResponse = client.post(urlString = "clubs/$clubId")
 
             if (response.status.isSuccess()) {
                 ApiResult.Success(
@@ -143,10 +143,20 @@ class RemoteClubDataSource(
                     statusCode = response.status.value
                 )
             } else {
-                ApiResult.Error(
-                    code = response.status.value,
-                    message = "HTTP Error: ${response.status.value}"
-                )
+                // 에러 응답 파싱 시도
+                try {
+                    val errorResponse: ErrorResponseDto = response.body()
+                    ApiResult.Error(
+                        code = response.status.value,
+                        message = errorResponse.message
+                    )
+                } catch (e: Exception) {
+                    // 파싱 실패 시 기본 에러 메시지
+                    ApiResult.Error(
+                        code = response.status.value,
+                        message = "HTTP Error: ${response.status.value}"
+                    )
+                }
             }
         } catch (t: Throwable){
             ApiResult.Error(message = t.message, cause = t)
