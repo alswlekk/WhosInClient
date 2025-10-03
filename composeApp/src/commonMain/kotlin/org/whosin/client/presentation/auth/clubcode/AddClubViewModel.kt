@@ -44,7 +44,7 @@ class AddClubViewModel(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            errorMessage = result.message ?: "조회시에 오류가 발생했습니다."
+                            errorMessage = result.message ?: "동아리 이름 조회에 오류가 발생했습니다."
                         )
                     }
                 }
@@ -52,17 +52,26 @@ class AddClubViewModel(
         }
     }
 
-    // TODO: 동아리 추가 함수
+    // 동아리 추가 함수
     fun addClub(clubId: Int) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             when (val result = repository.addClub(clubId = clubId)) {
                 is ApiResult.Success -> {
-
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = null
+                        )
+                    }
                 }
-
                 is ApiResult.Error -> {
-
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = result.message ?: "동아리 추가에 오류가 발생했습니다."
+                        )
+                    }
                 }
             }
         }
