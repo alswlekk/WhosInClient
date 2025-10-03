@@ -1,6 +1,8 @@
 package org.whosin.client.data.repository
 
 import org.whosin.client.core.network.ApiResult
+import org.whosin.client.data.dto.response.AddClubResponseDto
+import org.whosin.client.data.dto.response.ClubCodeConfirmResponseDto
 import org.whosin.client.data.dto.response.ClubPresencesResponseDto
 import org.whosin.client.data.dto.response.MyClubResponseDto
 import org.whosin.client.data.remote.RemoteClubDataSource
@@ -19,4 +21,10 @@ class ClubRepository(
 
     suspend fun checkOut(clubId: Int): ApiResult<Unit> =
         dataSource.checkOut(clubId)
+
+    suspend fun confirmClubCode(clubCode: String): ApiResult<ClubCodeConfirmResponseDto> =
+        dataSource.confirmClubCode(clubCode)
+
+    suspend fun addClub(clubId: Int): ApiResult<AddClubResponseDto> =
+        dataSource.addClub(clubId)
 }

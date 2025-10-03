@@ -4,11 +4,16 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
+import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.isSuccess
+import io.ktor.http.parameters
 import org.whosin.client.core.network.ApiResult
+import org.whosin.client.data.dto.response.AddClubResponseDto
+import org.whosin.client.data.dto.response.ClubCodeConfirmResponseDto
 import org.whosin.client.data.dto.response.ClubPresencesResponseDto
+import org.whosin.client.data.dto.response.ErrorResponseDto
 import org.whosin.client.data.dto.response.MyClubResponseDto
 
 class RemoteClubDataSource(
@@ -90,6 +95,70 @@ class RemoteClubDataSource(
                 )
             }
         } catch (t: Throwable) {
+            ApiResult.Error(message = t.message, cause = t)
+        }
+    }
+
+    // 동아리 번호 확인
+    suspend fun confirmClubCode(clubCode: String): ApiResult<ClubCodeConfirmResponseDto>{
+        return try {
+            val response: HttpResponse = client.get(urlString = "clubs"){
+                parameter("clubNumber", clubCode)
+            }
+
+            if (response.status.isSuccess()) {
+                ApiResult.Success(
+                    data = response.body(),
+                    statusCode = response.status.value
+                )
+            } else {
+                // 에러 응답 파싱 시도
+                try {
+                    val errorResponse: ErrorResponseDto = response.body()
+                    ApiResult.Error(
+                        code = response.status.value,
+                        message = errorResponse.message
+                    )
+                } catch (e: Exception) {
+                    // 파싱 실패 시 기본 에러 메시지
+                    ApiResult.Error(
+                        code = response.status.value,
+                        message = "HTTP Error: ${response.status.value}"
+                    )
+                }
+            }
+        } catch (t: Throwable){
+            ApiResult.Error(message = t.message, cause = t)
+        }
+    }
+
+    // 동아리 추가 함수
+    suspend fun addClub(clubId: Int): ApiResult<AddClubResponseDto> {
+        return try {
+            val response: HttpResponse = client.post(urlString = "clubs/$clubId")
+
+            if (response.status.isSuccess()) {
+                ApiResult.Success(
+                    data = response.body(),
+                    statusCode = response.status.value
+                )
+            } else {
+                // 에러 응답 파싱 시도
+                try {
+                    val errorResponse: ErrorResponseDto = response.body()
+                    ApiResult.Error(
+                        code = response.status.value,
+                        message = errorResponse.message
+                    )
+                } catch (e: Exception) {
+                    // 파싱 실패 시 기본 에러 메시지
+                    ApiResult.Error(
+                        code = response.status.value,
+                        message = "HTTP Error: ${response.status.value}"
+                    )
+                }
+            }
+        } catch (t: Throwable){
             ApiResult.Error(message = t.message, cause = t)
         }
     }
