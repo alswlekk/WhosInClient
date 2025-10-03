@@ -84,6 +84,9 @@ fun ClubCodeInputScreen(
             focusRequesters[0].requestFocus()
             viewModel.resetErrorState()
         }
+        if (currentState == ClubCodeState.SUCCESS){
+            keyboardController?.hide()
+        }
     }
 
     // 동아리 추가 성공 시 홈으로 이동
