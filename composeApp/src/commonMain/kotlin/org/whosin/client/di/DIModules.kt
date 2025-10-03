@@ -12,6 +12,7 @@ import org.whosin.client.data.repository.ClubRepository
 import org.whosin.client.data.repository.MemberRepository
 import org.whosin.client.presentation.dummy.DummyViewModel
 import org.whosin.client.presentation.dummy.TokenTestViewModel
+import org.whosin.client.presentation.auth.login.viewmodel.FindPasswordViewModel
 import org.whosin.client.presentation.auth.login.viewmodel.LoginViewModel
 import org.whosin.client.presentation.auth.login.viewmodel.SignupViewModel
 import org.whosin.client.presentation.home.HomeViewModel
@@ -47,6 +48,7 @@ val repositoryModule = module {
 val viewModelModule = module {
     viewModelOf(::LoginViewModel)
     viewModelOf(::SignupViewModel)
+    viewModelOf(::FindPasswordViewModel)
     viewModelOf(::HomeViewModel)
     viewModelOf(::MyPageViewModel)
     viewModelOf(::DummyViewModel) // TODO: 이후에 삭제 예정
