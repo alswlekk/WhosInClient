@@ -53,15 +53,13 @@ fun ClubCodeInputScreen(
     modifier: Modifier = Modifier,
     onNavigateBack: () -> Unit = {},
     onNavigateToHome: () -> Unit = {},
-    onErrorReset: () -> Unit = {},
-    verificationState: ClubCodeState = ClubCodeState.INPUT, // TODO: viewmodel로 리팩토링
     viewModel: AddClubViewModel = koinViewModel()
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
 
     var clubCode by remember { mutableStateOf(arrayOf("", "", "", "", "", "")) }
     var currentFocusIndex by remember { mutableStateOf(0) }
-    val currentState = verificationState // TODO: uiState의 verificationState를 사용하도록 리팩토링
+    val currentState = uiState.verificationState
     val focusRequesters = remember { List(6) { FocusRequester() } }
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -84,7 +82,7 @@ fun ClubCodeInputScreen(
             clubCode = arrayOf("", "", "", "", "", "")
             currentFocusIndex = 0
             focusRequesters[0].requestFocus()
-//            onErrorReset()
+            viewModel.resetErrorState()
         }
     }
 
@@ -256,7 +254,8 @@ fun ClubCodeInputScreen(
             onClick = {
                 if (currentState == ClubCodeState.SUCCESS) {
                     if (uiState.clubId != null){
-                        viewModel.addClub(uiState.clubId)
+//                        viewModel.addClub(uiState.clubId)
+                        println("확인 버튼 클릭")
                         // TODO: 추가 완료시 넘어가도록
                     }
                 } else {
@@ -275,16 +274,9 @@ fun ClubCodeInputScreen(
 @Preview
 @Composable
 fun ClubCodeInputScreenPreview() {
-    var verificationState by remember { mutableStateOf(ClubCodeState.INPUT) }
-    var clubName by remember { mutableStateOf("") }
-
     ClubCodeInputScreen(
         modifier = Modifier,
-        verificationState = verificationState,
         onNavigateBack = {},
-        onNavigateToHome = { },
-        onErrorReset = {
-            verificationState = ClubCodeState.INPUT
-        }
+        onNavigateToHome = { }
     )
 }

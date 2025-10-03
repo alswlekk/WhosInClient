@@ -44,11 +44,24 @@ class AddClubViewModel(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
+                            verificationState = ClubCodeState.ERROR,
                             errorMessage = result.message ?: "동아리 이름 조회에 오류가 발생했습니다."
                         )
                     }
                 }
             }
+        }
+    }
+
+    // 에러 상태 리셋 함수
+    fun resetErrorState() {
+        _uiState.update {
+            it.copy(
+                verificationState = ClubCodeState.INPUT,
+                errorMessage = null,
+                clubName = null,
+                clubId = null
+            )
         }
     }
 
