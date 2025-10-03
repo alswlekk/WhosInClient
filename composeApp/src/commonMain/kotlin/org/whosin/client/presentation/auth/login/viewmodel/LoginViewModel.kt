@@ -26,7 +26,12 @@ class LoginViewModel(
         viewModelScope.launch {
             when (val result = repository.login(email, password)) {
                 is ApiResult.Success -> {
-                    _uiState.value = LoginUiState.Success(result.data.data)
+                    val tokenData = result.data.data
+                    if (tokenData != null) {
+                        _uiState.value = LoginUiState.Success(tokenData)
+                    } else {
+                        _uiState.value = LoginUiState.Error("토큰 데이터를 받지 못했습니다.")
+                    }
                 }
                 is ApiResult.Error -> {
                     val message = result.message ?: result.cause?.message

@@ -21,7 +21,7 @@ class RemoteMemberDataSource(
     suspend fun login(email: String, password: String): ApiResult<LoginResponseDto> {
         return try {
             val response: HttpResponse = client
-                .post("api/members/login") {
+                .post("api/auth/login") {
                     setBody(
                         LoginRequestDto(email = email, password = password)
                     )
@@ -32,9 +32,10 @@ class RemoteMemberDataSource(
                     statusCode = response.status.value
                 )
             } else {
+                val errorResponse: LoginResponseDto = response.body()
                 ApiResult.Error(
-                    code = response.status.value,
-                    message = "HTTP ${response.status.value}"
+                    code = errorResponse.status,
+                    message = errorResponse.message
                 )
             }
         } catch (t: Throwable) {
