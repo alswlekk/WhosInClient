@@ -43,7 +43,9 @@ fun PasswordInputScreen(
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
 
-    val isComplete = password.isNotBlank() && confirmPassword.isNotBlank()
+    val isComplete = password.length >= 8 &&
+            confirmPassword.length >= 8 &&
+            password == confirmPassword
 
     Box(
         modifier = modifier
