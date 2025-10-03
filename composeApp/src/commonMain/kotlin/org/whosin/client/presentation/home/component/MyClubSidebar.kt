@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -73,12 +74,9 @@ private fun MyClubSidebarItem(
         modifier = Modifier
             .fillMaxWidth()
             .height(44.dp)
-            .background(color = backgroundColor, shape = RoundedCornerShape(12.dp))
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null, // 클릭 효과 제거
-                onClick = onClick
-            )
+            .clip(RoundedCornerShape(12.dp))
+            .background(color = backgroundColor)
+            .clickable(onClick = onClick)
             .padding(horizontal = 8.dp),
         contentAlignment = Alignment.CenterStart
     ) {
