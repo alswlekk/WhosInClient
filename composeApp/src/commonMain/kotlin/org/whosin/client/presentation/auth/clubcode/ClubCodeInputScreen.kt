@@ -86,6 +86,13 @@ fun ClubCodeInputScreen(
         }
     }
 
+    // 동아리 추가 성공 시 홈으로 이동
+    LaunchedEffect(uiState.isAddClubSuccess) {
+        if (uiState.isAddClubSuccess) {
+            onNavigateToHome()
+        }
+    }
+
     val fullCode = clubCode.joinToString("")
     val isComplete = fullCode.length == 6
 
@@ -197,6 +204,7 @@ fun ClubCodeInputScreen(
                 )
             }
 
+
             Box(
                 modifier = Modifier
                     .padding(top = if (currentState != ClubCodeState.ERROR) 48.dp else 0.dp)
@@ -245,6 +253,20 @@ fun ClubCodeInputScreen(
                         textAlign = TextAlign.Center
                     )
                 }
+
+                // 동아리 추가 실패 에러 메시지
+                if (uiState.errorMessage != null && !uiState.isAddClubSuccess) {
+                    Text(
+                        text = uiState.errorMessage,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W500,
+                        color = Color(0xFFFF3636),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .padding(top = 16.dp)
+                            .fillMaxWidth()
+                    )
+                }
             }
         }
 
@@ -254,9 +276,7 @@ fun ClubCodeInputScreen(
             onClick = {
                 if (currentState == ClubCodeState.SUCCESS) {
                     if (uiState.clubId != null){
-//                        viewModel.addClub(uiState.clubId)
-                        println("확인 버튼 클릭")
-                        // TODO: 추가 완료시 넘어가도록
+                        viewModel.addClub(uiState.clubId)
                     }
                 } else {
                     println("ClubCodeInputScreen : 확인 버튼 오류")
