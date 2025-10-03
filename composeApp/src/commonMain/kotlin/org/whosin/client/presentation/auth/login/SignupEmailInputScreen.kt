@@ -45,7 +45,7 @@ fun SignupScreen(
 ) {
     var email by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
-    
+
     val memberRepository: MemberRepository = koinInject()
     val coroutineScope = rememberCoroutineScope()
 
@@ -94,13 +94,14 @@ fun SignupScreen(
             onClick = {
                 if (email.isNotBlank() && !isLoading) {
                     isLoading = true
-                    
+
                     coroutineScope.launch {
                         when (memberRepository.sendEmailVerification(email)) {
                             is ApiResult.Success -> {
                                 isLoading = false
                                 onNavigateToEmailVerification(email)
                             }
+
                             is ApiResult.Error -> {
                                 isLoading = false
                             }
@@ -114,7 +115,7 @@ fun SignupScreen(
                 .padding(horizontal = 16.dp)
                 .padding(bottom = 52.dp)
         )
-        
+
         // 로딩 인디케이터
         if (isLoading) {
             CircularProgressIndicator(

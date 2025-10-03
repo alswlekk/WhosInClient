@@ -58,7 +58,7 @@ fun EmailVerificationScreen(
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val focusRequesters = remember { List(6) { FocusRequester() } }
     val keyboardController = LocalSoftwareKeyboardController.current
-    
+
     val memberRepository: MemberRepository = koinInject()
     val coroutineScope = rememberCoroutineScope()
 
@@ -125,7 +125,7 @@ fun EmailVerificationScreen(
                                 val newCode = verificationCode.copyOf()
                                 newCode[index] = input
                                 verificationCode = newCode
-                                
+
                                 // 에러 메시지 초기화
                                 errorMessage = null
 
@@ -166,7 +166,7 @@ fun EmailVerificationScreen(
                     )
                 }
             }
-            
+
             // 에러 메시지 표시
             if (errorMessage != null) {
                 Text(
@@ -188,13 +188,14 @@ fun EmailVerificationScreen(
             onClick = {
                 if (isComplete && !isLoading) {
                     isLoading = true
-                    
+
                     coroutineScope.launch {
                         when (val result = memberRepository.validateEmailCode(email, fullCode)) {
                             is ApiResult.Success -> {
                                 isLoading = false
                                 onVerificationComplete()
                             }
+
                             is ApiResult.Error -> {
                                 isLoading = false
                                 errorMessage = result.message
@@ -209,7 +210,7 @@ fun EmailVerificationScreen(
                 .padding(horizontal = 16.dp)
                 .padding(bottom = 52.dp)
         )
-        
+
         // 로딩 인디케이터
         if (isLoading) {
             CircularProgressIndicator(
