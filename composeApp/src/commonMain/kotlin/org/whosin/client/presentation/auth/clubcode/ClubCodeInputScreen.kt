@@ -219,6 +219,9 @@ fun ClubCodeInputScreen(
                     onClick = {
                         if (isComplete) {
                             viewModel.confirmClubCode(clubCode = fullCode)
+                            if (currentState == ClubCodeState.SUCCESS){
+                                keyboardController?.hide()
+                            }
                         }
                     },
                     enabled = isComplete,
