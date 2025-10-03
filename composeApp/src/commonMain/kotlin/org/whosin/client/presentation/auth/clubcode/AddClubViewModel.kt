@@ -15,7 +15,8 @@ data class AddClubUiState(
     val verificationState: ClubCodeState = ClubCodeState.INPUT,
     val clubName: String? = null,
     val clubId: Int? = null,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val isAddClubSuccess: Boolean = false
 )
 
 class AddClubViewModel(
@@ -76,7 +77,8 @@ class AddClubViewModel(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            errorMessage = null
+                            errorMessage = null,
+                            isAddClubSuccess = true
                         )
                     }
                 }
