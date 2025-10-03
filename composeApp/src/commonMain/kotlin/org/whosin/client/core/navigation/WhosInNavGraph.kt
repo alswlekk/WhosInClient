@@ -82,30 +82,36 @@ fun WhosInNavGraph(
             
             composable<Route.EmailVerification> { backStackEntry ->
                 val emailVerificationRoute = backStackEntry.toRoute<Route.EmailVerification>()
-                
+
                 EmailVerificationScreen(
                     modifier = modifier,
                     email = emailVerificationRoute.email,
                     onNavigateBack = { navController.navigateUp() },
                     onVerificationComplete = {
-                        navController.navigate(Route.PasswordInput)
+                        navController.navigate(Route.PasswordInput(emailVerificationRoute.email))
                     }
                 )
             }
-            
-            composable<Route.PasswordInput> {
+
+            composable<Route.PasswordInput> { backStackEntry ->
+                val passwordInputRoute = backStackEntry.toRoute<Route.PasswordInput>()
+
                 PasswordInputScreen(
                     modifier = modifier,
                     onNavigateBack = { navController.navigateUp() },
                     onPasswordComplete = { password, confirmPassword ->
-                        navController.navigate(Route.NicknameInput)
+                        navController.navigate(Route.NicknameInput(passwordInputRoute.email, password))
                     }
                 )
             }
-            
-            composable<Route.NicknameInput> {
+
+            composable<Route.NicknameInput> { backStackEntry ->
+                val nicknameInputRoute = backStackEntry.toRoute<Route.NicknameInput>()
+
                 NicknameInputScreen(
                     modifier = modifier,
+                    email = nicknameInputRoute.email,
+                    password = nicknameInputRoute.password,
                     onNavigateBack = { navController.navigateUp() },
                     onNavigateToClubCode = {
                         navController.navigate(Route.ClubCodeInput)
