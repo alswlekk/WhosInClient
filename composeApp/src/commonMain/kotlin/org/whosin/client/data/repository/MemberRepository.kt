@@ -5,6 +5,7 @@ import org.whosin.client.core.network.ApiResult
 import org.whosin.client.data.dto.response.LoginResponseDto
 import org.whosin.client.data.dto.response.EmailVerificationResponseDto
 import org.whosin.client.data.dto.response.SignupResponseDto
+import org.whosin.client.data.dto.response.FindPasswordResponseDto
 
 class MemberRepository(
     private val dataSource: RemoteMemberDataSource
@@ -32,5 +33,8 @@ class MemberRepository(
         nickName: String
     ): ApiResult<SignupResponseDto> =
         dataSource.signup(email, password, nickName)
+
+    suspend fun sendPasswordResetEmail(email: String): ApiResult<FindPasswordResponseDto> =
+        dataSource.sendPasswordResetEmail(email)
 
 }

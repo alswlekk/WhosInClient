@@ -9,9 +9,11 @@ import io.ktor.http.isSuccess
 import org.whosin.client.core.network.ApiResult
 import org.whosin.client.data.dto.request.EmailValidationRequestDto
 import org.whosin.client.data.dto.request.EmailVerificationRequestDto
+import org.whosin.client.data.dto.request.FindPasswordRequestDto
 import org.whosin.client.data.dto.request.LoginRequestDto
 import org.whosin.client.data.dto.request.SignupRequestDto
 import org.whosin.client.data.dto.response.EmailVerificationResponseDto
+import org.whosin.client.data.dto.response.FindPasswordResponseDto
 import org.whosin.client.data.dto.response.LoginResponseDto
 import org.whosin.client.data.dto.response.SignupResponseDto
 
@@ -115,6 +117,31 @@ class RemoteMemberDataSource(
                 )
             } else {
                 val errorResponse: SignupResponseDto = response.body()
+                ApiResult.Error(
+                    code = errorResponse.status,
+                    message = errorResponse.message
+                )
+            }
+        } catch (t: Throwable) {
+            ApiResult.Error(message = t.message, cause = t)
+        }
+    }
+
+    suspend fun sendPasswordResetEmail(email: String): ApiResult<FindPasswordResponseDto> {
+        return try {
+            val response: HttpResponse = client
+                .post("api/auth/email/find-password") {
+                    setBody(
+                        FindPasswordRequestDto(email = email)
+                    )
+                }
+            if (response.status.isSuccess()) {
+                ApiResult.Success(
+                    data = response.body(),
+                    statusCode = response.status.value
+                )
+            } else {
+                val errorResponse: FindPasswordResponseDto = response.body()
                 ApiResult.Error(
                     code = errorResponse.status,
                     message = errorResponse.message
