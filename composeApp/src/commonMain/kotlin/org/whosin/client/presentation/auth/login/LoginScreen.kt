@@ -11,9 +11,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,8 +30,11 @@ import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.viewmodel.koinViewModel
 import org.whosin.client.presentation.auth.login.component.CommonLoginButton
 import org.whosin.client.presentation.auth.login.component.CommonLoginInputField
+import org.whosin.client.presentation.auth.login.viewmodel.LoginUiState
+import org.whosin.client.presentation.auth.login.viewmodel.LoginViewModel
 import whosinclient.composeapp.generated.resources.Res
 import whosinclient.composeapp.generated.resources.email_label
 import whosinclient.composeapp.generated.resources.email_placeholder
@@ -45,10 +51,25 @@ fun LoginScreen(
     modifier: Modifier = Modifier,
     onNavigateToHome: () -> Unit,
     onNavigateToFindPassword: () -> Unit = {},
-    onNavigateToSignup: () -> Unit = {}
+    onNavigateToSignup: () -> Unit = {},
+    viewModel: LoginViewModel = koinViewModel()
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(uiState) {
+        when (uiState) {
+            is LoginUiState.Success -> {
+                onNavigateToHome()
+            }
+            is LoginUiState.Error -> {
+                errorMessage = (uiState as LoginUiState.Error).message
+            }
+            else -> {}
+        }
+    }
 
     Box(
         modifier = modifier
@@ -100,15 +121,31 @@ fun LoginScreen(
                 )
                 CommonLoginInputField(
                     value = password,
-                    onValueChange = { password = it },
+                    onValueChange = {
+                        password = it
+                        errorMessage = null
+                    },
                     placeholder = stringResource(Res.string.password_placeholder),
                     isPassword = true,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
+                if (errorMessage != null) {
+                    Text(
+                        text = errorMessage ?: "",
+                        color = Color.Red,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W400,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                }
+
                 CommonLoginButton(
                     text = stringResource(Res.string.login_button),
-                    onClick = onNavigateToHome,
+                    onClick = {
+                        viewModel.login(email, password)
+                    },
+                    enabled = email.isNotBlank() && password.isNotBlank() && uiState !is LoginUiState.Loading,
                     modifier = Modifier.padding(bottom = 12.dp)
                 )
             }
