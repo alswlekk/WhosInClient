@@ -12,5 +12,5 @@ data class UpdateMyInfoResponseDto(
     @SerialName("message")
     val message: String,
     @SerialName("data")
-    val data: String? = null
+    val data: MyInfoData
 )
