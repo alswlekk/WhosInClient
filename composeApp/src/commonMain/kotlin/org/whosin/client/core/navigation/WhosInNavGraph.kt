@@ -15,7 +15,6 @@ import org.whosin.client.presentation.auth.login.PasswordInputScreen
 import org.whosin.client.presentation.auth.login.SignupScreen
 import org.whosin.client.presentation.auth.login.SplashScreen
 import org.whosin.client.presentation.home.HomeScreen
-import org.whosin.client.presentation.mypage.EditMyInfoScreen
 import org.whosin.client.presentation.mypage.MyPageScreen
 
 @Composable
@@ -140,22 +139,6 @@ fun WhosInNavGraph(
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToAddClub = {
 
-                },
-                onNavigateToEdit = {
-                    navController.navigate(Route.UpdateMyInfo)
-                },
-            )
-        }
-
-        composable<Route.UpdateMyInfo> {
-            EditMyInfoScreen(
-                modifier = modifier,
-                onNavigateBack = { navController.navigateUp() },
-                onNavigateToMyPage = {
-                    navController.navigate(Route.MyPage) {
-                        popUpTo(Route.UpdateMyInfo) { inclusive = true }
-                        launchSingleTop = true
-                    }
                 }
             )
         }
