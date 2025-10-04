@@ -13,6 +13,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,6 +43,14 @@ fun MyPageScreen(
 ) {
     val viewModel: MyPageViewModel = koinViewModel()
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+
+    // MyPage로 돌아올 때마다 수정 모드 해제 및 데이터 새로고침
+    LaunchedEffect(Unit) {
+        if (uiState.isEditable) {
+            viewModel.toggleEditMode()
+        }
+        viewModel.getMyInfo()
+    }
 
     CommonBackHandler {
         if (uiState.isEditable) {
