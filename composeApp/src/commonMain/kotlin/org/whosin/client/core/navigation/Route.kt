@@ -29,7 +29,7 @@ sealed interface Route {
     data object NicknameInput: Route
 
     @Serializable
-    data object ClubCodeInput: Route
+    data class ClubCodeInput(val returnToMyPage: Boolean = false): Route
 
     /* 메인 화면 */
     @Serializable
