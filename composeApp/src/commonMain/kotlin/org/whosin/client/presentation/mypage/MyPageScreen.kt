@@ -46,6 +46,7 @@ fun MyPageScreen(
     CommonBackHandler {
         if (uiState.isEditable) {
             viewModel.toggleEditMode()
+            viewModel.getMyInfo()
         } else {
             onNavigateBack()
         }
@@ -107,9 +108,8 @@ fun MyPageScreen(
                     .padding(bottom = 72.dp),
                 isEditable = uiState.isEditable,
                 myClubs = uiState.clubs,
-                onDeleteClub = {
-                    // TODO: 동아리 삭제
-//                    viewModel.deleteClub(it)
+                onDeleteClub = { clubId ->
+                    viewModel.deleteClub(clubId)
                 },
                 onNavigateToAddClub =  onNavigateToAddClub
             )

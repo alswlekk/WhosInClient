@@ -74,5 +74,14 @@ class MyPageViewModel(
 
     // TODO: 내 정보 수정
 
+    // 클럽 삭제 (UI 상태에서만 제거)
+    fun deleteClub(clubId: Int) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                clubs = currentState.clubs.filter { it.clubId != clubId }
+            )
+        }
+        println("MyPageViewModel: 클럽 삭제 - clubId: $clubId")
+    }
 
 }
