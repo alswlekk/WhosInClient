@@ -65,7 +65,7 @@ fun MyPageScreen(
         modifier = modifier
             .fillMaxSize()
             .background(Color.White)
-            .padding(16.dp)
+            .padding(top = 16.dp, start = 16.dp, end = 16.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxWidth()
@@ -137,7 +137,9 @@ fun MyPageScreen(
                 else Res.string.edit_my_information
             ),
             enabled = uiState.nickname.isNotEmpty(),
-            modifier = Modifier.align(Alignment.BottomCenter)
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 52.dp)
         )
     }
 
