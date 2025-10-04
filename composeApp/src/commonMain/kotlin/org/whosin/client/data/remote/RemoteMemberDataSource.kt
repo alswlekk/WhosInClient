@@ -81,10 +81,10 @@ class RemoteMemberDataSource(
         clubList: List<Int>?
     ): ApiResult<UpdateMyInfoResponseDto> {
         return try {
-            val response: HttpResponse = client.patch(urlString = "users/myPage/update"){
-                setBody{
+            val response: HttpResponse = client.patch(urlString = "users/myPage/update") {
+                setBody(
                     UpdateMyInfoRequestDto(nickName = newNickName, clubList = clubList)
-                }
+                )
             }
 
             if (response.status.isSuccess()) {
