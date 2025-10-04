@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.whosin.client.core.network.ApiResult
 import org.whosin.client.data.dto.response.ClubData
-import org.whosin.client.data.dto.response.MyClubData
 import org.whosin.client.data.repository.MemberRepository
 
 data class MyPageUiState(
@@ -31,7 +30,7 @@ class MyPageViewModel(
     }
 
     // 수정 모드 변경
-    fun enableEditMode() {
+    fun toggleEditMode() {
         _uiState.update { it.copy(isEditable = !it.isEditable) }
     }
 

@@ -1,7 +1,6 @@
 package org.whosin.client.presentation.mypage
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -25,7 +24,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
-import org.whosin.client.data.dto.response.ClubData
+import org.whosin.client.presentation.component.CommonBackHandler
 import org.whosin.client.presentation.mypage.component.MyClubComponent
 import org.whosin.client.presentation.mypage.component.MyPageButton
 import org.whosin.client.presentation.mypage.component.MyPageTopAppBar
@@ -43,6 +42,14 @@ fun MyPageScreen(
 ) {
     val viewModel: MyPageViewModel = koinViewModel()
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+
+    CommonBackHandler {
+        if (uiState.isEditable) {
+            viewModel.toggleEditMode()
+        } else {
+            onNavigateBack()
+        }
+    }
 
     Box(
         modifier = modifier
@@ -110,7 +117,7 @@ fun MyPageScreen(
         
         // 내 정보 수정 버튼 - 하단에 고정
         MyPageButton(
-            onClick = { viewModel.enableEditMode() },
+            onClick = { viewModel.toggleEditMode() },
             text = stringResource(
                 if (uiState.isEditable) Res.string.complete_edit
                 else Res.string.edit_my_information
