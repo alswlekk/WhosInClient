@@ -17,8 +17,8 @@ data class MyInfoResponseDto(
 
 @Serializable
 data class MyInfoData(
-    @SerialName("nickname")
-    val nickname: String,
+    @SerialName("nickName")
+    val nickName: String,
     @SerialName("clubList")
     val clubList: List<MyClubData>
 )
