@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.whosin.client.core.network.ApiResult
+import org.whosin.client.data.dto.response.ClubData
 import org.whosin.client.data.dto.response.MyClubData
 import org.whosin.client.data.repository.MemberRepository
 
@@ -15,7 +16,7 @@ data class MyPageUiState(
     val isLoading: Boolean = false,
     val isEditable: Boolean = false,
     val nickname: String = "",
-    val clubs: List<MyClubData> = emptyList(),
+    val clubs: List<ClubData> = emptyList(),
     val errorMessage: String? = null,
 )
 
@@ -25,9 +26,18 @@ class MyPageViewModel(
     private val _uiState = MutableStateFlow(MyPageUiState())
     val uiState: StateFlow<MyPageUiState> = _uiState.asStateFlow()
 
+    init {
+        getMyInfo()
+    }
+
     // 수정 모드 변경
     fun enableEditMode() {
         _uiState.update { it.copy(isEditable = !it.isEditable) }
+    }
+
+    // 닉네임 변경
+    fun updateNickName(newNickname: String) {
+        _uiState.update { it.copy(nickname = newNickname) }
     }
 
     // 내 정보 조회
@@ -37,11 +47,16 @@ class MyPageViewModel(
             when (val result = repository.getMyInfo()) {
                 is ApiResult.Success -> {
                     val response = result.data.data
-                    _uiState.update {
+                    _uiState.update { it ->
                         it.copy(
                             isLoading = false,
-                            nickname = response.nickname,
-                            clubs = response.clubList,
+                            nickname = response.nickName,
+                            clubs = response.clubList.map { clubData ->
+                                ClubData(
+                                    clubId = clubData.id,
+                                    clubName = clubData.name
+                                )
+                            },
                             errorMessage = null
                         )
                     }
