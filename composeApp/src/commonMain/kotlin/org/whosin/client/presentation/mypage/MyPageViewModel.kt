@@ -81,6 +81,9 @@ class MyPageViewModel(
             }
             when (val result = repository.updateMyInfo(newNickName = newNickName, clubList = newClubs)) {
                 is ApiResult.Success -> {
+                    _uiState.update {
+                        it.copy(isEditable = false)
+                    }
                     getMyInfo()
                     println("MyPageViewModel: 내 정보 수정 성공")
                 }
