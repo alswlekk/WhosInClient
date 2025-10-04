@@ -64,7 +64,7 @@ fun MyPageScreen(
             MyPageTopAppBar(onNavigateBack)
             Spacer(modifier = Modifier.size(16.dp))
             Text(
-                text = stringResource(if(uiState.isEditable)Res.string.edit_my_information else Res.string.my_information),
+                text = stringResource(if (uiState.isEditable) Res.string.edit_my_information else Res.string.my_information),
                 fontSize = 24.sp,
                 color = Color.Black,
                 lineHeight = 24.sp,
@@ -111,13 +111,18 @@ fun MyPageScreen(
                 onDeleteClub = { clubId ->
                     viewModel.deleteClub(clubId)
                 },
-                onNavigateToAddClub =  onNavigateToAddClub
+                onNavigateToAddClub = onNavigateToAddClub
             )
         }
-        
+
         // 내 정보 수정 버튼 - 하단에 고정
         MyPageButton(
-            onClick = { viewModel.toggleEditMode() },
+            onClick = {
+                if (uiState.isEditable) {
+                    viewModel.updateMyInfo(uiState.nickname, uiState.clubs)
+                }
+                viewModel.toggleEditMode()
+            },
             text = stringResource(
                 if (uiState.isEditable) Res.string.complete_edit
                 else Res.string.edit_my_information

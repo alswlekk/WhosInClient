@@ -72,7 +72,28 @@ class MyPageViewModel(
         }
     }
 
-    // TODO: 내 정보 수정
+    // 내 정보 수정
+    fun updateMyInfo(newNickName: String, clubList: List<ClubData>?) {
+        viewModelScope.launch {
+            _uiState.update{ it.copy(isLoading = true) }
+            val newClubs = clubList?.map {
+                it.clubId
+            }
+            when (val result = repository.updateMyInfo(newNickName = newNickName, clubList = newClubs)) {
+                is ApiResult.Success -> {
+                    getMyInfo()
+                    println("MyPageViewModel: 내 정보 수정 성공")
+                }
+                is ApiResult.Error -> {
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        errorMessage = result.message ?: "내 정보 수정에 실패했습니다."
+                    )
+                    println("MyPageViewModel: 내 정보 수정 실패 - ${result.message}")
+                }
+            }
+        }
+    }
 
     // 클럽 삭제 (UI 상태에서만 제거)
     fun deleteClub(clubId: Int) {
