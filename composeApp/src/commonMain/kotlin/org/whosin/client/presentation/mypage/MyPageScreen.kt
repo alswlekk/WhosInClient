@@ -95,6 +95,7 @@ fun MyPageScreen(
                     readOnly = !uiState.isEditable,
                     value = uiState.nickname,
                     onValueChange = { viewModel.updateNickName(it) },
+                    singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     textStyle = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Medium),
                     colors = OutlinedTextFieldDefaults.colors(
@@ -128,7 +129,7 @@ fun MyPageScreen(
         MyPageButton(
             onClick = {
                 if (uiState.isEditable) {
-                    viewModel.updateMyInfo(uiState.nickname, uiState.clubs)
+                    viewModel.updateMyInfo(uiState.nickname.trim(), uiState.clubs)
                 }
                 viewModel.toggleEditMode()
             },
