@@ -21,9 +21,10 @@ import io.ktor.http.encodedPath
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.whosin.client.BuildKonfig
+import org.whosin.client.core.auth.TokenExpiredManager
 import org.whosin.client.core.datastore.TokenManager
 import org.whosin.client.data.dto.request.ReissueTokenRequestDto
-import org.whosin.client.data.dto.response.TokenDto
+import org.whosin.client.data.dto.response.ReissueTokenResponseDto
 
 object HttpClientFactory {
     val BASE_URL = BuildKonfig.BASE_URL
@@ -45,10 +46,11 @@ object HttpClientFactory {
                 socketTimeoutMillis = 20_000L
                 requestTimeoutMillis = 20_000L
             }
-            install(Auth){
+            install(Auth) {
                 bearer {
                     loadTokens {
-                        val accessToken = tokenManager.getAccessToken() ?: "eyJhbGciOiJIUzI1NiJ9.eyJ0b2tlblR5cGUiOiJhY2Nlc3MiLCJ1c2VySWQiOjUsInByb3ZpZGVySWQiOiJsb2NhbGhvc3QiLCJuYW1lIjoi7Iug7KKF7JykIiwicm9sZSI6IlJPTEVfTUVNQkVSIiwiaWF0IjoxNzU5MzgyMzg3LCJleHAiOjE3NTk5ODcxODd9.kT9IH60aCA-6ByEITb-_qPAJY0Oik1bbPKqcBWXzHIk"
+                        val accessToken = tokenManager.getAccessToken()
+                            ?: "eyJhbGciOiJIUzI1NiJ9.eyJ0b2tlblR5cGUiOiJhY2Nlc3MiLCJ1c2VySWQiOjUsInByb3ZpZGVySWQiOiJsb2NhbGhvc3QiLCJuYW1lIjoi7Iug7KKF7JykIiwicm9sZSI6IlJPTEVfTUVNQkVSIiwiaWF0IjoxNzU5MzgyMzg3LCJleHAiOjE3NTk5ODcxODd9.kT9IH60aCA-6ByEITb-_qPAJY0Oik1bbPKqcBWXzHIk"
                         val refreshToken = tokenManager.getRefreshToken() ?: "no_token"
                         BearerTokens(accessToken = accessToken, refreshToken = refreshToken)
                     }
@@ -75,7 +77,7 @@ object HttpClientFactory {
                                 "auth/login",
                                 "auth/email",
                                 "auth/email/validation",
-                                "member/reissue" // 토큰 재발급 요청 자체에는 만료된 액세스 토큰을 보내면 안 됨
+                                "auth/reissue" // 토큰 재발급 요청
                             )
 
                             val isNoAuthPath = pathWithNoAuth.any { noAuthPath ->
@@ -88,26 +90,42 @@ object HttpClientFactory {
                         }
                     }
                     refreshTokens {
-                        val rt = tokenManager.getRefreshToken() ?: "no_token"
-                        val response = client.post("member/reissue"){
-                            setBody {
-                                ReissueTokenRequestDto(
-                                    refreshToken = rt
-                                )
+                        try {
+                            val rt = tokenManager.getRefreshToken()
+                            if (rt.isNullOrEmpty()) {
+                                tokenManager.clearToken()
+                                TokenExpiredManager.setTokenExpired()
+                                return@refreshTokens null
                             }
-                            markAsRefreshTokenRequest()
-                        }.body<TokenDto>()
-                        tokenManager.saveTokens(
-                            accessToken = response.accessToken,
-                            refreshToken = response.refreshToken
-                        )
-                        val accessToken = response.accessToken
-                        val refreshToken = response.refreshToken
-                        BearerTokens(accessToken,refreshToken)
+
+                            val response = client.post("auth/reissue") {
+                                setBody(ReissueTokenRequestDto(refreshToken = rt))
+                                markAsRefreshTokenRequest()
+                            }.body<ReissueTokenResponseDto>()
+
+                            if (response.success && response.data != null) {
+                                tokenManager.saveTokens(
+                                    accessToken = response.data.accessToken,
+                                    refreshToken = response.data.refreshToken
+                                )
+                                BearerTokens(
+                                    accessToken = response.data.accessToken,
+                                    refreshToken = response.data.refreshToken
+                                )
+                            } else {
+                                tokenManager.clearToken()
+                                TokenExpiredManager.setTokenExpired()
+                                null
+                            }
+                        } catch (e: Exception) {
+                            tokenManager.clearToken()
+                            TokenExpiredManager.setTokenExpired()
+                            null
+                        }
                     }
                 }
             }
-            install(Logging){
+            install(Logging) {
                 logger = object : Logger {
                     override fun log(message: String) {
                         println(message)
