@@ -56,18 +56,11 @@ fun LoginScreen(
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
     val uiState by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(uiState) {
-        when (uiState) {
-            is LoginUiState.Success -> {
-                onNavigateToHome()
-            }
-            is LoginUiState.Error -> {
-                errorMessage = (uiState as LoginUiState.Error).message
-            }
-            else -> {}
+    LaunchedEffect(uiState.isSuccess) {
+        if (uiState.isSuccess) {
+            onNavigateToHome()
         }
     }
 
@@ -121,18 +114,15 @@ fun LoginScreen(
                 )
                 CommonLoginInputField(
                     value = password,
-                    onValueChange = {
-                        password = it
-                        errorMessage = null
-                    },
+                    onValueChange = { password = it },
                     placeholder = stringResource(Res.string.password_placeholder),
                     isPassword = true,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                if (errorMessage != null) {
+                uiState.errorMessage?.let { errorMsg ->
                     Text(
-                        text = errorMessage ?: "",
+                        text = errorMsg,
                         color = Color.Red,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.W400,
@@ -145,7 +135,7 @@ fun LoginScreen(
                     onClick = {
                         viewModel.login(email, password)
                     },
-                    enabled = email.isNotBlank() && password.isNotBlank() && uiState !is LoginUiState.Loading,
+                    enabled = email.isNotBlank() && password.isNotBlank() && !uiState.isLoading,
                     modifier = Modifier.padding(bottom = 12.dp)
                 )
             }

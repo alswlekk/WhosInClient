@@ -13,6 +13,7 @@ import org.whosin.client.data.dto.request.FindPasswordRequestDto
 import org.whosin.client.data.dto.request.LoginRequestDto
 import org.whosin.client.data.dto.request.SignupRequestDto
 import org.whosin.client.data.dto.response.EmailVerificationResponseDto
+import org.whosin.client.data.dto.response.ErrorResponseDto
 import org.whosin.client.data.dto.response.FindPasswordResponseDto
 import org.whosin.client.data.dto.response.LoginResponseDto
 import org.whosin.client.data.dto.response.SignupResponseDto
@@ -34,11 +35,20 @@ class RemoteAuthDataSource(
                     statusCode = response.status.value
                 )
             } else {
-                val errorResponse: LoginResponseDto = response.body()
-                ApiResult.Error(
-                    code = errorResponse.status,
-                    message = errorResponse.message
-                )
+                // 에러 응답 파싱 시도
+                try {
+                    val errorResponse: ErrorResponseDto = response.body()
+                    ApiResult.Error(
+                        code = response.status.value,
+                        message = errorResponse.message
+                    )
+                } catch (e: Exception) {
+                    // 파싱 실패 시 기본 에러 메시지
+                    ApiResult.Error(
+                        code = response.status.value,
+                        message = "HTTP Error: ${response.status.value}"
+                    )
+                }
             }
         } catch (t: Throwable) {
             ApiResult.Error(message = t.message, cause = t)
