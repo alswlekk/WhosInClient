@@ -12,6 +12,7 @@ import org.whosin.client.data.repository.AuthRepository
 import org.whosin.client.data.repository.DummyRepository
 import org.whosin.client.data.repository.ClubRepository
 import org.whosin.client.data.repository.MemberRepository
+import org.whosin.client.presentation.auth.clubcode.AddClubViewModel
 import org.whosin.client.presentation.dummy.DummyViewModel
 import org.whosin.client.presentation.dummy.TokenTestViewModel
 import org.whosin.client.presentation.auth.login.viewmodel.FindPasswordViewModel
@@ -57,4 +58,5 @@ val viewModelModule = module {
     viewModelOf(::MyPageViewModel)
     viewModelOf(::DummyViewModel) // TODO: 이후에 삭제 예정
     viewModelOf(::TokenTestViewModel) // TODO: 이후에 삭제 예정
+    viewModelOf(::AddClubViewModel)
 }

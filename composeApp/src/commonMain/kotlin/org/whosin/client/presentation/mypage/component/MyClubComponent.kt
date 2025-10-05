@@ -33,13 +33,14 @@ import whosinclient.composeapp.generated.resources.Res
 @Composable
 fun MyClubComponent(
     modifier: Modifier = Modifier,
+    isEditable: Boolean = false,
     myClubs: List<ClubData>,
     onDeleteClub: (Int) -> Unit,
     onNavigateToAddClub: () -> Unit
 ) {
     Column(
         modifier = modifier
-    ){
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth(),
@@ -53,15 +54,17 @@ fun MyClubComponent(
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp
             )
-            Text(
-                modifier = Modifier
-                    .clickable(onClick = onNavigateToAddClub),
-                text = "추가하기",
-                color = Color(0xFFF89531),
-                fontFamily = pretendardFontFamily(),
-                fontSize = 16.sp,
-                textDecoration = TextDecoration.Underline
-            )
+            if (isEditable) {
+                Text(
+                    modifier = Modifier
+                        .clickable(onClick = onNavigateToAddClub),
+                    text = "추가하기",
+                    color = Color(0xFFF89531),
+                    fontFamily = pretendardFontFamily(),
+                    fontSize = 16.sp,
+                    textDecoration = TextDecoration.Underline
+                )
+            }
         }
         Spacer(modifier = Modifier.size(20.dp))
         LazyColumn(
@@ -78,7 +81,8 @@ fun MyClubComponent(
             items(myClubs) { clubData ->
                 MyClubItem(
                     modifier = Modifier,
-                    clubName = clubData.clubName
+                    clubName = clubData.clubName,
+                    isEditable = isEditable,
                 ) {
                     println("clicked clubId : ${clubData.clubId}")
                     onDeleteClub(clubData.clubId)
@@ -91,6 +95,7 @@ fun MyClubComponent(
 @Composable
 fun MyClubItem(
     modifier: Modifier = Modifier,
+    isEditable: Boolean = false,
     clubName: String,
     onDeleteClub: () -> Unit
 ) {
@@ -106,13 +111,15 @@ fun MyClubItem(
             fontFamily = pretendardFontFamily(),
             fontSize = 16.sp
         )
-        AsyncImage(
-            model = Res.getUri("files/ic_x.svg"),
-            contentDescription = "Delete Club",
-            modifier = Modifier
-                .size(24.dp)
-                .clickable(onClick = onDeleteClub)
-        )
+        if (isEditable) {
+            AsyncImage(
+                model = Res.getUri("files/ic_x.svg"),
+                contentDescription = "Delete Club",
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickable(onClick = onDeleteClub)
+            )
+        }
     }
 }
 
