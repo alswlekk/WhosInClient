@@ -18,6 +18,7 @@ import org.whosin.client.presentation.dummy.TokenTestViewModel
 import org.whosin.client.presentation.auth.login.viewmodel.FindPasswordViewModel
 import org.whosin.client.presentation.auth.login.viewmodel.LoginViewModel
 import org.whosin.client.presentation.auth.login.viewmodel.SignupViewModel
+import org.whosin.client.presentation.auth.login.viewmodel.SplashViewModel
 import org.whosin.client.presentation.home.HomeViewModel
 import org.whosin.client.presentation.mypage.MyPageViewModel
 
@@ -51,6 +52,7 @@ val repositoryModule = module {
 
 // ViewModel을 새로 생성하는 경우에 모듈에 추가하여 사용
 val viewModelModule = module {
+    viewModelOf(::SplashViewModel)
     viewModelOf(::LoginViewModel)
     viewModelOf(::SignupViewModel)
     viewModelOf(::FindPasswordViewModel)

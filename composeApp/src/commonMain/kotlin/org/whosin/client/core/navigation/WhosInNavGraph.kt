@@ -38,6 +38,11 @@ fun WhosInNavGraph(
                         navController.navigate(Route.Login) {
                             popUpTo(Route.Splash) { inclusive = true }
                         }
+                    },
+                    onNavigateToHome = {
+                        navController.navigate(Route.Home) {
+                            popUpTo(Route.AuthGraph) { inclusive = true }
+                        }
                     }
                 )
             }
