@@ -26,7 +26,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.whosin.client.presentation.auth.login.component.CommonLoginButton
 import org.whosin.client.presentation.auth.login.component.CommonLoginInputField
-import org.whosin.client.data.repository.MemberRepository
+import org.whosin.client.data.repository.AuthRepository
 import org.whosin.client.core.network.ApiResult
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
@@ -46,7 +46,7 @@ fun SignupScreen(
     var email by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
 
-    val memberRepository: MemberRepository = koinInject()
+    val authRepository: AuthRepository = koinInject()
     val coroutineScope = rememberCoroutineScope()
 
     Box(
@@ -96,8 +96,8 @@ fun SignupScreen(
                     isLoading = true
 
                     coroutineScope.launch {
-                        when (memberRepository.sendEmailVerification(email)) {
-                            is ApiResult.Success -> {
+                        when (authRepository.sendEmailVerification(email)) {
+                            is ApiResult.Success<*> -> {
                                 isLoading = false
                                 onNavigateToEmailVerification(email)
                             }

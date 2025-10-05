@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.whosin.client.core.datastore.TokenManager
 import org.whosin.client.core.network.ApiResult
-import org.whosin.client.data.repository.MemberRepository
+import org.whosin.client.data.repository.AuthRepository
 
 sealed interface SignupUiState {
     data object Idle: SignupUiState
@@ -17,7 +17,7 @@ sealed interface SignupUiState {
 }
 
 class SignupViewModel(
-    private val repository: MemberRepository,
+    private val repository: AuthRepository,
     private val tokenManager: TokenManager
 ): ViewModel() {
     private val _uiState: MutableStateFlow<SignupUiState> = MutableStateFlow(SignupUiState.Idle)

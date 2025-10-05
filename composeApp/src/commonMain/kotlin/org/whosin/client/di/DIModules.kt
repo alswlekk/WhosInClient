@@ -5,8 +5,10 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 import org.whosin.client.core.network.HttpClientFactory
 import org.whosin.client.data.remote.DummyDataSource
+import org.whosin.client.data.remote.RemoteAuthDataSource
 import org.whosin.client.data.remote.RemoteClubDataSource
 import org.whosin.client.data.remote.RemoteMemberDataSource
+import org.whosin.client.data.repository.AuthRepository
 import org.whosin.client.data.repository.DummyRepository
 import org.whosin.client.data.repository.ClubRepository
 import org.whosin.client.data.repository.MemberRepository
@@ -33,12 +35,14 @@ val httpClientModule = module {
 }
 
 val dataSourceModule = module {
+    single { RemoteAuthDataSource(get()) }
     single { RemoteMemberDataSource(get()) }
     single { RemoteClubDataSource(get()) }
     single { DummyDataSource(get()) } // TODO: 이후에 삭제 예정
 }
 
 val repositoryModule = module {
+    single { AuthRepository(get()) }
     single { MemberRepository(get()) }
     single { ClubRepository(get()) }
     single { DummyRepository(get()) } // TODO: 이후에 삭제 예정

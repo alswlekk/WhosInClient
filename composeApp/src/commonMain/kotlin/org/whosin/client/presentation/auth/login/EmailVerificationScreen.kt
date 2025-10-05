@@ -37,7 +37,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.whosin.client.core.network.ApiResult
-import org.whosin.client.data.repository.MemberRepository
+import org.whosin.client.data.repository.AuthRepository
 import org.whosin.client.presentation.auth.login.component.CommonLoginButton
 import org.whosin.client.presentation.auth.login.component.NumberInputBox
 import whosinclient.composeapp.generated.resources.Res
@@ -59,7 +59,7 @@ fun EmailVerificationScreen(
     val focusRequesters = remember { List(6) { FocusRequester() } }
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    val memberRepository: MemberRepository = koinInject()
+    val authRepository: AuthRepository = koinInject()
     val coroutineScope = rememberCoroutineScope()
 
     // 화면 진입 시 첫 번째 입력 박스에 포커스
@@ -190,8 +190,8 @@ fun EmailVerificationScreen(
                     isLoading = true
 
                     coroutineScope.launch {
-                        when (val result = memberRepository.validateEmailCode(email, fullCode)) {
-                            is ApiResult.Success -> {
+                        when (val result = authRepository.validateEmailCode(email, fullCode)) {
+                            is ApiResult.Success<*> -> {
                                 isLoading = false
                                 onVerificationComplete()
                             }

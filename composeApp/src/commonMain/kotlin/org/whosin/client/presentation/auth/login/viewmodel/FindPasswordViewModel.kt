@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.whosin.client.core.network.ApiResult
-import org.whosin.client.data.repository.MemberRepository
+import org.whosin.client.data.repository.AuthRepository
 
 sealed interface FindPasswordUiState {
     data object Idle: FindPasswordUiState
@@ -16,7 +16,7 @@ sealed interface FindPasswordUiState {
 }
 
 class FindPasswordViewModel(
-    private val repository: MemberRepository
+    private val repository: AuthRepository
 ): ViewModel() {
     private val _uiState: MutableStateFlow<FindPasswordUiState> = MutableStateFlow(FindPasswordUiState.Idle)
     val uiState: StateFlow<FindPasswordUiState> = _uiState
