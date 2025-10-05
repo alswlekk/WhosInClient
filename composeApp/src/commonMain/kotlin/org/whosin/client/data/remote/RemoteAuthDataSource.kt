@@ -24,7 +24,7 @@ class RemoteAuthDataSource(
     suspend fun login(email: String, password: String): ApiResult<LoginResponseDto> {
         return try {
             val response: HttpResponse = client
-                .post("api/auth/login") {
+                .post("auth/login") {
                     setBody(
                         LoginRequestDto(email = email, password = password)
                     )
@@ -58,7 +58,7 @@ class RemoteAuthDataSource(
     suspend fun sendEmailVerification(email: String): ApiResult<EmailVerificationResponseDto> {
         return try {
             val response: HttpResponse = client
-                .post("api/auth/email/send") {
+                .post("auth/email/send") {
                     setBody(
                         EmailVerificationRequestDto(email = email)
                     )
@@ -86,7 +86,7 @@ class RemoteAuthDataSource(
     ): ApiResult<EmailVerificationResponseDto> {
         return try {
             val response: HttpResponse = client
-                .post("api/auth/email/validation") {
+                .post("auth/email/validation") {
                     setBody(
                         EmailValidationRequestDto(email = email, authCode = authCode)
                     )
@@ -115,7 +115,7 @@ class RemoteAuthDataSource(
     ): ApiResult<SignupResponseDto> {
         return try {
             val response: HttpResponse = client
-                .post("api/users/signup") {
+                .post("users/signup") {
                     setBody(
                         SignupRequestDto(email = email, password = password, nickName = nickName)
                     )
@@ -140,7 +140,7 @@ class RemoteAuthDataSource(
     suspend fun sendPasswordResetEmail(email: String): ApiResult<FindPasswordResponseDto> {
         return try {
             val response: HttpResponse = client
-                .post("api/auth/email/find-password") {
+                .post("auth/email/find-password") {
                     setBody(
                         FindPasswordRequestDto(email = email)
                     )
