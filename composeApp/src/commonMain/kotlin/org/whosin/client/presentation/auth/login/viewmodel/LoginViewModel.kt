@@ -5,32 +5,52 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.whosin.client.core.datastore.TokenManager
 import org.whosin.client.core.network.ApiResult
-import org.whosin.client.data.repository.MemberRepository
-import org.whosin.client.data.dto.response.TokenDto
+import org.whosin.client.data.repository.AuthRepository
 
-sealed interface LoginUiState {
-    data object Loading: LoginUiState
-    data class Success(val token: TokenDto): LoginUiState
-    data class Error(val message: String?): LoginUiState
-}
+data class LoginUiState(
+    val isLoading: Boolean = false,
+    val isSuccess: Boolean = false,
+    val errorMessage: String? = null
+)
 
 class LoginViewModel(
-    private val repository: MemberRepository
+    private val repository: AuthRepository,
+    private val tokenManager: TokenManager
 ): ViewModel() {
-    private val _uiState: MutableStateFlow<LoginUiState?> = MutableStateFlow(null)
-    val uiState: StateFlow<LoginUiState?> = _uiState
+    private val _uiState = MutableStateFlow(LoginUiState())
+    val uiState: StateFlow<LoginUiState> = _uiState
 
     fun login(email: String, password: String) {
-        _uiState.value = LoginUiState.Loading
         viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
+
             when (val result = repository.login(email, password)) {
                 is ApiResult.Success -> {
-                    _uiState.value = LoginUiState.Success(result.data.data)
+                    val tokenData = result.data.data
+                    if (tokenData != null) {
+                        tokenManager.saveTokens(
+                            accessToken = tokenData.accessToken,
+                            refreshToken = tokenData.refreshToken
+                        )
+                        _uiState.value = _uiState.value.copy(
+                            isLoading = false,
+                            isSuccess = true,
+                            errorMessage = null
+                        )
+                    } else {
+                        _uiState.value = _uiState.value.copy(
+                            isLoading = false,
+                            errorMessage = "토큰 데이터를 받지 못했습니다."
+                        )
+                    }
                 }
                 is ApiResult.Error -> {
-                    val message = result.message ?: result.cause?.message
-                    _uiState.value = LoginUiState.Error(message)
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        errorMessage = result.message ?: "로그인에 실패했습니다."
+                    )
                 }
             }
         }

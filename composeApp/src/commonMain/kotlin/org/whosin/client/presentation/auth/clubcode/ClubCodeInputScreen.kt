@@ -152,16 +152,20 @@ fun ClubCodeInputScreen(
                         onValueChange = { input ->
                             if (input.length <= 1 && input.all { it.isDigit() }) {
                                 val newCode = clubCode.copyOf()
-                                val wasEmpty = clubCode[index].isEmpty()
                                 newCode[index] = input
                                 clubCode = newCode
 
+                                // 숫자를 입력했을 때만 다음 박스로 이동
                                 if (input.isNotEmpty() && index < 5) {
                                     currentFocusIndex = index + 1
                                     focusRequesters[index + 1].requestFocus()
-                                } else if (input.isEmpty() && !wasEmpty && index > 0) {
+                                    keyboardController?.show()
+                                }
+                                // 현재 박스가 비워지고 이전 박스가 있으면 이전으로 이동
+                                else if (input.isEmpty() && index > 0) {
                                     currentFocusIndex = index - 1
                                     focusRequesters[index - 1].requestFocus()
+                                    keyboardController?.show()
                                 }
                             }
                         },
@@ -170,12 +174,18 @@ fun ClubCodeInputScreen(
                                 val prevIndex = index - 1
                                 currentFocusIndex = prevIndex
                                 focusRequesters[prevIndex].requestFocus()
+                                keyboardController?.show()
                             }
                         },
                         onFocusChanged = { isFocused ->
                             if (isFocused) {
                                 currentFocusIndex = index
                             }
+                        },
+                        onClick = {
+                            currentFocusIndex = index
+                            focusRequesters[index].requestFocus()
+                            keyboardController?.show()
                         },
                         borderColor = when (currentState) {
                             ClubCodeState.ERROR -> Color(0xFFFF3636)

@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class LoginResponseDto(
+data class FindPasswordResponseDto(
     @SerialName("success")
     val success: Boolean,
     @SerialName("status")
@@ -12,15 +12,7 @@ data class LoginResponseDto(
     @SerialName("message")
     val message: String,
     @SerialName("data")
-    val data: TokenDto? = null,
+    val data: String? = null,
     @SerialName("timestamp")
     val timestamp: String? = null
-)
-
-@Serializable
-data class TokenDto(
-    @SerialName("accessToken")
-    val accessToken: String,
-    @SerialName("refreshToken")
-    val refreshToken: String
 )

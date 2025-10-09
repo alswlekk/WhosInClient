@@ -3,12 +3,15 @@ package org.whosin.client
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.whosin.client.core.auth.TokenExpiredManager
+import org.whosin.client.core.navigation.Route
 import org.whosin.client.core.navigation.WhosInNavGraph
-import org.whosin.client.presentation.dummy.DummyScreen
-import org.whosin.client.presentation.dummy.TokenTestScreen
 import ui.theme.WhosInTheme
 
 
@@ -17,6 +20,16 @@ import ui.theme.WhosInTheme
 fun App() {
     WhosInTheme {
         val navController = rememberNavController()
+        val isTokenExpired by TokenExpiredManager.isTokenExpired.collectAsState()
+
+        LaunchedEffect(isTokenExpired) {
+            if (isTokenExpired) {
+                navController.navigate(Route.Login) {
+                    popUpTo(0) { inclusive = true }
+                }
+                TokenExpiredManager.reset()
+            }
+        }
 
         WhosInNavGraph(
             modifier = Modifier
