@@ -7,8 +7,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.whosin.client.core.auth.TokenExpiredManager
+import org.whosin.client.core.datastore.TokenManager
 import org.whosin.client.core.network.ApiResult
 import org.whosin.client.data.dto.response.ClubData
+import org.whosin.client.data.repository.AuthRepository
 import org.whosin.client.data.repository.MemberRepository
 
 data class MyPageUiState(
@@ -20,7 +23,9 @@ data class MyPageUiState(
 )
 
 class MyPageViewModel(
-    private val repository: MemberRepository
+    private val memberRepository: MemberRepository,
+    private val authRepository: AuthRepository,
+    private val tokenManager: TokenManager
 ): ViewModel() {
     private val _uiState = MutableStateFlow(MyPageUiState())
     val uiState: StateFlow<MyPageUiState> = _uiState.asStateFlow()
@@ -43,7 +48,7 @@ class MyPageViewModel(
     fun getMyInfo() {
         viewModelScope.launch {
             _uiState.update{ it.copy(isLoading = true) }
-            when (val result = repository.getMyInfo()) {
+            when (val result = memberRepository.getMyInfo()) {
                 is ApiResult.Success -> {
                     val response = result.data.data
                     _uiState.update { it ->
@@ -79,7 +84,7 @@ class MyPageViewModel(
             val newClubs = clubList?.map {
                 it.clubId
             }
-            when (val result = repository.updateMyInfo(newNickName = newNickName, clubList = newClubs)) {
+            when (val result = memberRepository.updateMyInfo(newNickName = newNickName, clubList = newClubs)) {
                 is ApiResult.Success -> {
                     _uiState.update {
                         it.copy(isEditable = false)
@@ -108,4 +113,33 @@ class MyPageViewModel(
         println("MyPageViewModel: 클럽 삭제 - clubId: $clubId")
     }
 
+    // 로그아웃
+    fun logout(){
+        viewModelScope.launch {
+            val refreshToken = tokenManager.getRefreshToken()
+            if (refreshToken.isNullOrEmpty()) {
+                // 리프레시 토큰이 없으면 바로 토큰 삭제 및 로그인 화면으로 이동
+                tokenManager.clearToken()
+                TokenExpiredManager.setTokenExpired()
+                return@launch
+            }
+            
+            when (val result = authRepository.logout(refreshToken)) {
+                is ApiResult.Success -> {
+                    println("MyPageViewModel: 로그아웃 성공")
+                    // 토큰 삭제 및 로그인 화면으로 이동
+                    tokenManager.clearToken()
+                    TokenExpiredManager.setTokenExpired()
+                }
+                is ApiResult.Error -> {
+                    _uiState.value = _uiState.value.copy(
+                        errorMessage = result.message ?: "로그아웃에 실패했습니다."
+                    )
+                    println("MyPageViewModel: 로그아웃 실패 - ${result.message}")
+                }
+            }
+        }
+    }
+
+    // TODO: 회원 탈퇴
 }

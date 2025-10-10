@@ -1,20 +1,30 @@
 package org.whosin.client.presentation.mypage
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -25,6 +35,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
+import org.whosin.client.data.dto.response.ClubData
 import org.whosin.client.presentation.component.CommonBackHandler
 import org.whosin.client.presentation.mypage.component.MyClubComponent
 import org.whosin.client.presentation.mypage.component.MyPageButton
@@ -43,6 +54,8 @@ fun MyPageScreen(
 ) {
     val viewModel: MyPageViewModel = koinViewModel()
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+    
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     // MyPage로 돌아올 때마다 수정 모드 해제 및 데이터 새로고침
     LaunchedEffect(Unit) {
@@ -61,14 +74,17 @@ fun MyPageScreen(
         }
     }
 
-    Box(
+    Column(
         modifier = modifier
             .fillMaxSize()
             .background(Color.White)
             .padding(top = 16.dp, start = 16.dp, end = 16.dp)
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f) // MyPageButton 위 공간만 사용
+                .verticalScroll(rememberScrollState())
         ) {
             MyPageTopAppBar(onNavigateBack)
             Spacer(modifier = Modifier.size(16.dp))
@@ -113,9 +129,7 @@ fun MyPageScreen(
             // 내 동아리 / 학과 목록
             MyClubComponent(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .padding(bottom = 72.dp),
+                    .fillMaxWidth(),
                 isEditable = uiState.isEditable,
                 myClubs = uiState.clubs,
                 onDeleteClub = { clubId ->
@@ -123,9 +137,49 @@ fun MyPageScreen(
                 },
                 onNavigateToAddClub = onNavigateToAddClub
             )
+            Spacer(modifier = Modifier.size(24.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 32.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ){
+                Button(
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(10.dp),
+                    onClick = {
+                        viewModel.logout()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFF5F5F5),
+                        contentColor = Color.Black
+                    )
+                ){
+                    Text(
+                        text = "로그아웃",
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+                Button(
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(10.dp),
+                    onClick = {
+                        showDeleteDialog = true
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFFF3636),
+                        contentColor = Color.White
+                    )
+                ){
+                    Text(
+                        text = "회원 탈퇴",
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
         }
-
-        // 내 정보 수정 버튼 - 하단에 고정
+        
+        // 내 정보 수정 버튼
         MyPageButton(
             onClick = {
                 if (uiState.isEditable) {
@@ -139,8 +193,61 @@ fun MyPageScreen(
             ),
             enabled = uiState.nickname.isNotEmpty(),
             modifier = Modifier
-                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
                 .padding(bottom = 52.dp)
+        )
+    }
+    
+    // 회원 탈퇴 확인 다이얼로그
+    if (showDeleteDialog) {
+        AlertDialog(
+            containerColor = Color(0xFFFFFFFF),
+            onDismissRequest = { showDeleteDialog = false },
+            title = {
+                Text(
+                    text = "회원 탈퇴",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 18.sp
+                )
+            },
+            text = {
+                Text(
+                    text = "탈퇴 후에는 모든 데이터가 삭제되며 복구할 수 없습니다.",
+                    fontSize = 16.sp
+                )
+            },
+            confirmButton = {
+                Button(
+                    shape = RoundedCornerShape(10.dp),
+                    onClick = {
+                        showDeleteDialog = false
+                        // TODO: 회원 탈퇴 api 연결
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFFF3636),
+                        contentColor = Color.White
+                    )
+                ) {
+                    Text(
+                        text = "확인",
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            },
+            dismissButton = {
+                OutlinedButton(
+                    shape = RoundedCornerShape(10.dp),
+                    onClick = { showDeleteDialog = false },
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = Color.Black
+                    )
+                ) {
+                    Text(
+                        text = "취소",
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
         )
     }
 

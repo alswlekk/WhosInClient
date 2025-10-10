@@ -4,16 +4,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -67,25 +65,30 @@ fun MyClubComponent(
             }
         }
         Spacer(modifier = Modifier.size(20.dp))
-        LazyColumn(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .border(
                     width = 1.dp,
                     color = Color(0xFFE5E5E5),
                     shape = RoundedCornerShape(20.dp)
-                ),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+                )
         ) {
-            items(myClubs) { clubData ->
-                MyClubItem(
-                    modifier = Modifier,
-                    clubName = clubData.clubName,
-                    isEditable = isEditable,
-                ) {
-                    println("clicked clubId : ${clubData.clubId}")
-                    onDeleteClub(clubData.clubId)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(24.dp)
+            ) {
+                myClubs.forEach { clubData ->
+                    MyClubItem(
+                        modifier = Modifier,
+                        clubName = clubData.clubName,
+                        isEditable = isEditable,
+                    ) {
+                        println("clicked clubId : ${clubData.clubId}")
+                        onDeleteClub(clubData.clubId)
+                    }
                 }
             }
         }

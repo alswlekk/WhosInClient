@@ -6,6 +6,7 @@ import org.whosin.client.data.dto.response.LoginResponseDto
 import org.whosin.client.data.dto.response.EmailVerificationResponseDto
 import org.whosin.client.data.dto.response.SignupResponseDto
 import org.whosin.client.data.dto.response.FindPasswordResponseDto
+import org.whosin.client.data.dto.response.LogoutResponseDto
 
 class AuthRepository(
     private val dataSource: RemoteAuthDataSource
@@ -36,5 +37,8 @@ class AuthRepository(
 
     suspend fun sendPasswordResetEmail(email: String): ApiResult<FindPasswordResponseDto> =
         dataSource.sendPasswordResetEmail(email)
+
+    suspend fun logout(refreshToken: String): ApiResult<LogoutResponseDto> =
+        dataSource.logout(refreshToken)
 
 }
