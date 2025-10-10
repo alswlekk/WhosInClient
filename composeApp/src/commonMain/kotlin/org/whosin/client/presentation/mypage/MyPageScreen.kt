@@ -148,7 +148,7 @@ fun MyPageScreen(
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(10.dp),
                     onClick = {
-                        // TODO: 로그아웃 로직 연결
+                        viewModel.logout()
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFFF5F5F5),
