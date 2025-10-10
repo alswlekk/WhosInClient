@@ -161,6 +161,9 @@ fun ClubCodeInputScreen(
                                     focusRequesters[index + 1].requestFocus()
                                     keyboardController?.show()
                                 }
+                                else if (input.isNotEmpty() && index == 5) {
+                                    keyboardController?.hide()
+                                }
                                 // 현재 박스가 비워지고 이전 박스가 있으면 이전으로 이동
                                 else if (input.isEmpty() && index > 0) {
                                     currentFocusIndex = index - 1
