@@ -61,8 +61,8 @@ import whosinclient.composeapp.generated.resources.people_count
 fun HomeScreen(
     modifier: Modifier = Modifier,
     onNavigateToMyPage: () -> Unit,
-    viewModel: HomeViewModel = koinViewModel()
 ) {
+    val viewModel: HomeViewModel = koinViewModel()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
