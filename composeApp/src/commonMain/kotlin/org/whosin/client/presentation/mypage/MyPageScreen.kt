@@ -221,7 +221,7 @@ fun MyPageScreen(
                     shape = RoundedCornerShape(10.dp),
                     onClick = {
                         showDeleteDialog = false
-                        // TODO: 회원 탈퇴 api 연결
+                        viewModel.deleteAccount()
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFFFF3636),

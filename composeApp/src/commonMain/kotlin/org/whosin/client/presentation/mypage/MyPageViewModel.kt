@@ -117,29 +117,41 @@ class MyPageViewModel(
     fun logout(){
         viewModelScope.launch {
             val refreshToken = tokenManager.getRefreshToken()
-            if (refreshToken.isNullOrEmpty()) {
-                // 리프레시 토큰이 없으면 바로 토큰 삭제 및 로그인 화면으로 이동
-                tokenManager.clearToken()
-                TokenExpiredManager.setTokenExpired()
-                return@launch
+            
+            // 서버에 로그아웃 요청 (실패해도 상관없음)
+            if (!refreshToken.isNullOrEmpty()) {
+                try {
+                    authRepository.logout(refreshToken)
+                    println("MyPageViewModel: 로그아웃 API 호출 완료")
+                } catch (e: Exception) {
+                    println("MyPageViewModel: 로그아웃 API 호출 실패 - ${e.message}")
+                }
             }
             
-            when (val result = authRepository.logout(refreshToken)) {
+            // 토큰 삭제 및 로그인 화면으로 이동
+            tokenManager.clearToken()
+            TokenExpiredManager.setTokenExpired()
+        }
+    }
+
+    fun deleteAccount() {
+        viewModelScope.launch {
+            _uiState.update{ it.copy(isLoading = true) }
+            when (val result = authRepository.deleteAccount()) {
                 is ApiResult.Success -> {
-                    println("MyPageViewModel: 로그아웃 성공")
+                    println("MyPageViewModel: 회원 탈퇴 성공")
                     // 토큰 삭제 및 로그인 화면으로 이동
                     tokenManager.clearToken()
                     TokenExpiredManager.setTokenExpired()
                 }
                 is ApiResult.Error -> {
                     _uiState.value = _uiState.value.copy(
-                        errorMessage = result.message ?: "로그아웃에 실패했습니다."
+                        isLoading = false,
+                        errorMessage = result.message ?: "회원 탈퇴에 실패했습니다."
                     )
-                    println("MyPageViewModel: 로그아웃 실패 - ${result.message}")
+                    println("MyPageViewModel: 회원 탈퇴 실패 - ${result.message}")
                 }
             }
         }
     }
-
-    // TODO: 회원 탈퇴
 }

@@ -2,6 +2,7 @@ package org.whosin.client.data.repository
 
 import org.whosin.client.data.remote.RemoteAuthDataSource
 import org.whosin.client.core.network.ApiResult
+import org.whosin.client.data.dto.response.DeleteAccountResponseDto
 import org.whosin.client.data.dto.response.LoginResponseDto
 import org.whosin.client.data.dto.response.EmailVerificationResponseDto
 import org.whosin.client.data.dto.response.SignupResponseDto
@@ -40,5 +41,8 @@ class AuthRepository(
 
     suspend fun logout(refreshToken: String): ApiResult<LogoutResponseDto> =
         dataSource.logout(refreshToken)
+
+    suspend fun deleteAccount(): ApiResult<DeleteAccountResponseDto> =
+        dataSource.deleteAccount()
 
 }
