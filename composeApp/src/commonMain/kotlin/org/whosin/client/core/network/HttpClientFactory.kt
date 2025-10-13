@@ -5,13 +5,17 @@ import io.ktor.client.call.body
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.auth.Auth
+import io.ktor.client.plugins.auth.authProvider
 import io.ktor.client.plugins.auth.providers.BearerTokens
+import io.ktor.client.plugins.auth.providers.BearerAuthProvider
 import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.plugin
+import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
@@ -28,11 +32,12 @@ import org.whosin.client.data.dto.response.ReissueTokenResponseDto
 
 object HttpClientFactory {
     val BASE_URL = BuildKonfig.BASE_URL
+    
     fun create(
         engine: HttpClientEngine,
         tokenManager: TokenManager
     ): HttpClient {
-        return HttpClient(engine) {
+        val httpClient = HttpClient(engine) {
             install(ContentNegotiation) {
                 json(
                     json = Json {
@@ -50,9 +55,13 @@ object HttpClientFactory {
                 bearer {
                     loadTokens {
                         val accessToken = tokenManager.getAccessToken()
-                            ?: "eyJhbGciOiJIUzI1NiJ9.eyJ0b2tlblR5cGUiOiJhY2Nlc3MiLCJ1c2VySWQiOjUsInByb3ZpZGVySWQiOiJsb2NhbGhvc3QiLCJuYW1lIjoi7Iug7KKF7JykIiwicm9sZSI6IlJPTEVfTUVNQkVSIiwiaWF0IjoxNzU5MzgyMzg3LCJleHAiOjE3NTk5ODcxODd9.kT9IH60aCA-6ByEITb-_qPAJY0Oik1bbPKqcBWXzHIk"
-                        val refreshToken = tokenManager.getRefreshToken() ?: "no_token"
-                        BearerTokens(accessToken = accessToken, refreshToken = refreshToken)
+                        val refreshToken = tokenManager.getRefreshToken()
+                        println("loadTokens 실행, Access: $accessToken, Refresh: $refreshToken")
+                        if (accessToken.isNullOrEmpty() || refreshToken.isNullOrEmpty()) {
+                            null
+                        } else {
+                            BearerTokens(accessToken = accessToken, refreshToken = refreshToken)
+                        }
                     }
                     sendWithoutRequest { request ->
                         val requestHost = request.url.host
@@ -77,7 +86,7 @@ object HttpClientFactory {
                                 "auth/login",
                                 "auth/email",
                                 "auth/email/validation",
-                                "auth/reissue" // 토큰 재발급 요청
+//                                "auth/reissue" // 토큰 재발급 요청
                             )
 
                             val isNoAuthPath = pathWithNoAuth.any { noAuthPath ->
@@ -98,9 +107,15 @@ object HttpClientFactory {
                                 return@refreshTokens null
                             }
 
+                            // 토큰 재발급 요청 시에는 현재 access token을 헤더에 수동으로 추가
+                            val currentAccessToken = tokenManager.getAccessToken()
                             val response = client.post("auth/reissue") {
                                 setBody(ReissueTokenRequestDto(refreshToken = rt))
-                                markAsRefreshTokenRequest()
+//                                markAsRefreshTokenRequest() // 헤더에 access token이 추가될 필요가 없는 경우에 사용
+                                // 현재 access token을 헤더에 추가
+                                if (!currentAccessToken.isNullOrEmpty()) {
+                                    header("Authorization", "Bearer $currentAccessToken")
+                                }
                             }.body<ReissueTokenResponseDto>()
 
                             if (response.success && response.data != null) {
@@ -138,5 +153,25 @@ object HttpClientFactory {
                 url(BASE_URL)
             }
         }
+        
+        // TokenManager에 HttpClient 참조 설정
+        tokenManager.setHttpClient(httpClient)
+        
+        return httpClient
+    }
+}
+
+/**
+ * HttpClient의 BearerAuthProvider에서 캐시된 토큰을 클리어하여
+ * loadTokens 블록이 다시 실행되도록 합니다.
+ */
+fun HttpClient.invalidateAuthTokens() {
+    try {
+        val authProvider = this.authProvider<BearerAuthProvider>()
+        requireNotNull(authProvider)
+        authProvider.clearToken()
+        println("BearerAuthProvider 토큰이 성공적으로 클리어되었습니다.")
+    } catch (e: Exception) {
+        println("토큰 클리어 중 오류 발생: ${e.message}")
     }
 }
