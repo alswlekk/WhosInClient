@@ -26,23 +26,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kotlinx.coroutines.delay
 import coil3.compose.AsyncImage
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
+import org.whosin.client.core.util.hideKeyboard
 import org.whosin.client.presentation.auth.login.component.CommonLoginButton
 import org.whosin.client.presentation.auth.login.component.NumberInputBox
 import whosinclient.composeapp.generated.resources.Res
 import whosinclient.composeapp.generated.resources.back_button
 import whosinclient.composeapp.generated.resources.club_code_confirm_button
-import whosinclient.composeapp.generated.resources.club_code_error_message
 import whosinclient.composeapp.generated.resources.club_code_title_1
 import whosinclient.composeapp.generated.resources.club_code_title_2
 import whosinclient.composeapp.generated.resources.confirm_button
@@ -62,6 +63,7 @@ fun ClubCodeInputScreen(
     val currentState = uiState.verificationState
     val focusRequesters = remember { List(6) { FocusRequester() } }
     val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
 
     LaunchedEffect(Unit) {
         delay(300)
@@ -84,7 +86,7 @@ fun ClubCodeInputScreen(
             focusRequesters[0].requestFocus()
             viewModel.resetErrorState()
         }
-        if (currentState == ClubCodeState.SUCCESS){
+        if (currentState == ClubCodeState.SUCCESS) {
             keyboardController?.hide()
         }
     }
@@ -161,8 +163,11 @@ fun ClubCodeInputScreen(
                                     focusRequesters[index + 1].requestFocus()
                                     keyboardController?.show()
                                 }
+                                // 마지막 자리 입력 완료 시 키보드 숨기기
                                 else if (input.isNotEmpty() && index == 5) {
+                                    focusManager.clearFocus()
                                     keyboardController?.hide()
+                                    hideKeyboard()
                                 }
                                 // 현재 박스가 비워지고 이전 박스가 있으면 이전으로 이동
                                 else if (input.isEmpty() && index > 0) {
@@ -209,7 +214,7 @@ fun ClubCodeInputScreen(
             // 에러 메시지
             if (currentState == ClubCodeState.ERROR) {
                 Text(
-                    text = uiState.errorMessage?:"예상치 못한 오류가 발생했습니다",
+                    text = uiState.errorMessage ?: "예상치 못한 오류가 발생했습니다",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.W500,
                     color = Color(0xFFFF3636),
@@ -232,7 +237,7 @@ fun ClubCodeInputScreen(
                     onClick = {
                         if (isComplete) {
                             viewModel.confirmClubCode(clubCode = fullCode)
-                            if (currentState == ClubCodeState.SUCCESS){
+                            if (currentState == ClubCodeState.SUCCESS) {
                                 keyboardController?.hide()
                             }
                         }
@@ -294,7 +299,7 @@ fun ClubCodeInputScreen(
             text = stringResource(Res.string.confirm_button),
             onClick = {
                 if (currentState == ClubCodeState.SUCCESS) {
-                    if (uiState.clubId != null){
+                    if (uiState.clubId != null) {
                         viewModel.addClub(uiState.clubId)
                     }
                 } else {

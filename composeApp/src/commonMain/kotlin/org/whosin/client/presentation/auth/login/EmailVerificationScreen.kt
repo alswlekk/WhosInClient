@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -37,6 +38,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.whosin.client.core.network.ApiResult
+import org.whosin.client.core.util.hideKeyboard
 import org.whosin.client.data.repository.AuthRepository
 import org.whosin.client.presentation.auth.login.component.CommonLoginButton
 import org.whosin.client.presentation.auth.login.component.NumberInputBox
@@ -58,6 +60,7 @@ fun EmailVerificationScreen(
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val focusRequesters = remember { List(6) { FocusRequester() } }
     val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
 
     val authRepository: AuthRepository = koinInject()
     val coroutineScope = rememberCoroutineScope()
@@ -134,8 +137,11 @@ fun EmailVerificationScreen(
                                     currentFocusIndex = index + 1
                                     focusRequesters[index + 1].requestFocus()
                                 }
+                                // 마지막 자리 입력 완료 시 키보드 숨기기
                                 else if (input.isNotEmpty() && index == 5) {
+                                    focusManager.clearFocus()
                                     keyboardController?.hide()
+                                    hideKeyboard()
                                 }
                                 // 현재 박스가 비워지고 이전 박스가 있으면 이전으로 이동
                                 else if (input.isEmpty() && index > 0) {
