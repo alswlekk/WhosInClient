@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
@@ -28,26 +29,26 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import org.whosin.client.presentation.component.CommonBackHandler
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.viewmodel.koinViewModel
 import org.whosin.client.presentation.home.component.MyClubSidebar
 import org.whosin.client.presentation.home.component.PresentMembersList
-import org.whosin.client.presentation.home.mock.sampleUsers
 import whosinclient.composeapp.generated.resources.Res
 import whosinclient.composeapp.generated.resources.current_whos_in_bottom
 import whosinclient.composeapp.generated.resources.current_whos_in_top
@@ -59,16 +60,18 @@ import whosinclient.composeapp.generated.resources.people_count
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    onNavigateBack: () -> Unit,
     onNavigateToMyPage: () -> Unit,
 ) {
+    val viewModel: HomeViewModel = koinViewModel()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    var isAttending by remember { mutableStateOf(true) }
-    val clubs = listOf("메이커스팜", "목방", "건대교지편집위원회", "국어국문학과", "컴퓨터공학부")
-
-    var selectedClub by remember { mutableStateOf(clubs.first()) }
+    CommonBackHandler(enabled = drawerState.isOpen) {
+        scope.launch {
+            drawerState.close()
+        }
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -81,10 +84,14 @@ fun HomeScreen(
             ) {
                 MyClubSidebar(
                     modifier = Modifier.height(325.dp),
-                    clubs = clubs,
-                    selectedClub = selectedClub,
-                    onClubSelected = { newClub ->
-                        selectedClub = newClub
+                    clubs = uiState.clubs.map { it.name },
+                    selectedClub = uiState.selectedClub?.name ?: "",
+                    onClubSelected = { clubName ->
+                        // 이름으로 다시 ClubUi 객체 찾기
+                        uiState.clubs.find { it.name == clubName }?.let {
+                            viewModel.onClubSelected(it)
+                        }
+                        scope.launch { drawerState.close() }
                     },
                     onClose = {
                         scope.launch { drawerState.close() }
@@ -140,7 +147,7 @@ fun HomeScreen(
 
                 Column {
                     Text(
-                        text = stringResource(Res.string.current_whos_in_top, selectedClub),
+                        text = stringResource(Res.string.current_whos_in_top, uiState.selectedClub?.name ?: "..."),
                         color = Color.Black,
                         fontSize = 20.sp,
                         lineHeight = 32.sp,
@@ -168,7 +175,7 @@ fun HomeScreen(
                             modifier = Modifier
                                 .padding(start = 4.dp, bottom = 3.dp)
                                 .size(24.dp)
-//                        .clickable(onClick = onNavigateToMyPage)
+                                .clickable { viewModel.refresh() }
                         )
                     }
                 }
@@ -178,13 +185,17 @@ fun HomeScreen(
                     verticalAlignment = Alignment.Bottom,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Text(
-                        text = sampleUsers.size.toString(), // TODO: 데이터 적용
-                        color = Color.Black,
-                        fontSize = 45.sp,
-                        lineHeight = 67.5.sp,
-                        fontWeight = FontWeight(700)
-                    )
+                    if (uiState.isClubsLoading || uiState.isMembersLoading) {
+                        CircularProgressIndicator(modifier = Modifier.size(45.dp))
+                    } else {
+                        Text(
+                            text = uiState.presentMembers.size.toString(),
+                            color = Color.Black,
+                            fontSize = 45.sp,
+                            lineHeight = 67.5.sp,
+                            fontWeight = FontWeight(700)
+                        )
+                    }
 
                     Text(
                         text = stringResource(Res.string.people_count),
@@ -213,19 +224,29 @@ fun HomeScreen(
                         .padding(top = 20.dp, start = 16.dp, end = 16.dp, bottom = 118.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    PresentMembersList(presentMemberList = sampleUsers)
+                    when {
+                        uiState.errorMessage != null -> {
+                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                Text(text = uiState.errorMessage!!)
+                            }
+                        }
+                        else -> {
+                            PresentMembersList(presentMemberList = uiState.presentMembers)
+                        }
+                    }
                 }
             }
 
             AnimatedContent(
-                targetState = isAttending,
+                targetState = uiState.isAttending,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .clickable(
+                        enabled = !uiState.isToggleLoading,
                         interactionSource = remember { MutableInteractionSource() },
-                        indication = null // 클릭 효과 제거
+                        indication = null
                     ) {
-                        isAttending = !isAttending
+                        viewModel.toggleAttendance()
                     },
                 transitionSpec = {
                     fadeIn(animationSpec = tween(1000)) togetherWith
@@ -254,7 +275,6 @@ fun HomeScreen(
 fun HomeScreenPreview() {
     HomeScreen(
         modifier = Modifier.fillMaxSize(),
-        onNavigateBack = {},
         onNavigateToMyPage = {}
     )
 }
