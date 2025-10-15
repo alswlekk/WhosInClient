@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,42 +26,44 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
 import kotlinx.coroutines.delay
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.viewmodel.koinViewModel
+import org.whosin.client.core.util.hideKeyboard
 import org.whosin.client.presentation.auth.login.component.CommonLoginButton
 import org.whosin.client.presentation.auth.login.component.NumberInputBox
 import whosinclient.composeapp.generated.resources.Res
 import whosinclient.composeapp.generated.resources.back_button
 import whosinclient.composeapp.generated.resources.club_code_confirm_button
-import whosinclient.composeapp.generated.resources.club_code_error_message
 import whosinclient.composeapp.generated.resources.club_code_title_1
 import whosinclient.composeapp.generated.resources.club_code_title_2
 import whosinclient.composeapp.generated.resources.confirm_button
-import whosinclient.composeapp.generated.resources.ic_back
 
 
 @Composable
 fun ClubCodeInputScreen(
     modifier: Modifier = Modifier,
     onNavigateBack: () -> Unit = {},
-    onNavigateToHome: (String) -> Unit = {},
-    onVerifyClubCode: (String) -> Unit = {},
-    onErrorReset: () -> Unit = {},
-    verificationState: ClubCodeState = ClubCodeState.INPUT,
-    clubName: String = ""
+    onNavigateToHome: () -> Unit = {},
+    viewModel: AddClubViewModel = koinViewModel()
 ) {
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+
     var clubCode by remember { mutableStateOf(arrayOf("", "", "", "", "", "")) }
     var currentFocusIndex by remember { mutableStateOf(0) }
-    val currentState = verificationState
+    val currentState = uiState.verificationState
     val focusRequesters = remember { List(6) { FocusRequester() } }
     val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
 
     LaunchedEffect(Unit) {
         delay(300)
@@ -83,7 +84,17 @@ fun ClubCodeInputScreen(
             clubCode = arrayOf("", "", "", "", "", "")
             currentFocusIndex = 0
             focusRequesters[0].requestFocus()
-            onErrorReset()
+            viewModel.resetErrorState()
+        }
+        if (currentState == ClubCodeState.SUCCESS) {
+            keyboardController?.hide()
+        }
+    }
+
+    // 동아리 추가 성공 시 홈으로 이동
+    LaunchedEffect(uiState.isAddClubSuccess) {
+        if (uiState.isAddClubSuccess) {
+            onNavigateToHome()
         }
     }
 
@@ -108,10 +119,9 @@ fun ClubCodeInputScreen(
                     .padding(bottom = 32.dp)
                     .size(24.dp)
             ) {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_back),
+                AsyncImage(
+                    model = Res.getUri("files/ic_back.svg"),
                     contentDescription = stringResource(Res.string.back_button),
-                    tint = Color.Black,
                     modifier = Modifier.size(18.dp)
                 )
             }
@@ -144,16 +154,26 @@ fun ClubCodeInputScreen(
                         onValueChange = { input ->
                             if (input.length <= 1 && input.all { it.isDigit() }) {
                                 val newCode = clubCode.copyOf()
-                                val wasEmpty = clubCode[index].isEmpty()
                                 newCode[index] = input
                                 clubCode = newCode
 
+                                // 숫자를 입력했을 때만 다음 박스로 이동
                                 if (input.isNotEmpty() && index < 5) {
                                     currentFocusIndex = index + 1
                                     focusRequesters[index + 1].requestFocus()
-                                } else if (input.isEmpty() && !wasEmpty && index > 0) {
+                                    keyboardController?.show()
+                                }
+                                // 마지막 자리 입력 완료 시 키보드 숨기기
+                                else if (input.isNotEmpty() && index == 5) {
+                                    focusManager.clearFocus()
+                                    keyboardController?.hide()
+                                    hideKeyboard()
+                                }
+                                // 현재 박스가 비워지고 이전 박스가 있으면 이전으로 이동
+                                else if (input.isEmpty() && index > 0) {
                                     currentFocusIndex = index - 1
                                     focusRequesters[index - 1].requestFocus()
+                                    keyboardController?.show()
                                 }
                             }
                         },
@@ -162,12 +182,18 @@ fun ClubCodeInputScreen(
                                 val prevIndex = index - 1
                                 currentFocusIndex = prevIndex
                                 focusRequesters[prevIndex].requestFocus()
+                                keyboardController?.show()
                             }
                         },
                         onFocusChanged = { isFocused ->
                             if (isFocused) {
                                 currentFocusIndex = index
                             }
+                        },
+                        onClick = {
+                            currentFocusIndex = index
+                            focusRequesters[index].requestFocus()
+                            keyboardController?.show()
                         },
                         borderColor = when (currentState) {
                             ClubCodeState.ERROR -> Color(0xFFFF3636)
@@ -188,7 +214,7 @@ fun ClubCodeInputScreen(
             // 에러 메시지
             if (currentState == ClubCodeState.ERROR) {
                 Text(
-                    text = stringResource(Res.string.club_code_error_message),
+                    text = uiState.errorMessage ?: "예상치 못한 오류가 발생했습니다",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.W500,
                     color = Color(0xFFFF3636),
@@ -198,6 +224,7 @@ fun ClubCodeInputScreen(
                         .fillMaxWidth()
                 )
             }
+
 
             Box(
                 modifier = Modifier
@@ -209,7 +236,10 @@ fun ClubCodeInputScreen(
                     text = stringResource(Res.string.club_code_confirm_button),
                     onClick = {
                         if (isComplete) {
-                            onVerifyClubCode(fullCode)
+                            viewModel.confirmClubCode(clubCode = fullCode)
+                            if (currentState == ClubCodeState.SUCCESS) {
+                                keyboardController?.hide()
+                            }
                         }
                     },
                     enabled = isComplete,
@@ -240,11 +270,25 @@ fun ClubCodeInputScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = clubName,
+                        text = uiState.clubName ?: "",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.W500,
                         color = Color.Black,
                         textAlign = TextAlign.Center
+                    )
+                }
+
+                // 동아리 추가 실패 에러 메시지
+                if (uiState.errorMessage != null && !uiState.isAddClubSuccess) {
+                    Text(
+                        text = uiState.errorMessage,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W500,
+                        color = Color(0xFFFF3636),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .padding(top = 16.dp)
+                            .fillMaxWidth()
                     )
                 }
             }
@@ -255,7 +299,11 @@ fun ClubCodeInputScreen(
             text = stringResource(Res.string.confirm_button),
             onClick = {
                 if (currentState == ClubCodeState.SUCCESS) {
-                    onNavigateToHome(clubName)
+                    if (uiState.clubId != null) {
+                        viewModel.addClub(uiState.clubId)
+                    }
+                } else {
+                    println("ClubCodeInputScreen : 확인 버튼 오류")
                 }
             },
             enabled = currentState == ClubCodeState.SUCCESS,
@@ -270,25 +318,9 @@ fun ClubCodeInputScreen(
 @Preview
 @Composable
 fun ClubCodeInputScreenPreview() {
-    var verificationState by remember { mutableStateOf(ClubCodeState.INPUT) }
-    var clubName by remember { mutableStateOf("") }
-
     ClubCodeInputScreen(
         modifier = Modifier,
-        verificationState = verificationState,
-        clubName = clubName,
         onNavigateBack = {},
-        onNavigateToHome = { name -> println("Navigate to home with: $name") },
-        onVerifyClubCode = { code ->
-            if (code == "123456") {
-                verificationState = ClubCodeState.SUCCESS
-                clubName = "메이커스팜"
-            } else {
-                verificationState = ClubCodeState.ERROR
-            }
-        },
-        onErrorReset = {
-            verificationState = ClubCodeState.INPUT
-        }
+        onNavigateToHome = { }
     )
 }

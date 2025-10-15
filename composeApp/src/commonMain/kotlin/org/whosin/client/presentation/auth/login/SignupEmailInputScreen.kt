@@ -7,9 +7,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,15 +21,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.jetbrains.compose.resources.painterResource
+import coil3.compose.AsyncImage
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.whosin.client.presentation.auth.login.component.CommonLoginButton
 import org.whosin.client.presentation.auth.login.component.CommonLoginInputField
+import org.whosin.client.data.repository.AuthRepository
+import org.whosin.client.core.network.ApiResult
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 import whosinclient.composeapp.generated.resources.Res
 import whosinclient.composeapp.generated.resources.back_button
 import whosinclient.composeapp.generated.resources.email_placeholder
-import whosinclient.composeapp.generated.resources.ic_back
 import whosinclient.composeapp.generated.resources.next_button
 import whosinclient.composeapp.generated.resources.signup_title
 
@@ -40,6 +44,10 @@ fun SignupScreen(
     onNavigateToEmailVerification: (String) -> Unit = {}
 ) {
     var email by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
+
+    val authRepository: AuthRepository = koinInject()
+    val coroutineScope = rememberCoroutineScope()
 
     Box(
         modifier = modifier
@@ -59,12 +67,10 @@ fun SignupScreen(
                     .padding(bottom = 32.dp)
                     .size(24.dp)
             ) {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_back),
+                AsyncImage(
+                    model = Res.getUri("files/ic_back.svg"),
                     contentDescription = stringResource(Res.string.back_button),
-                    tint = Color.Black,
-                    modifier = Modifier
-                        .size(18.dp)
+                    modifier = Modifier.size(18.dp)
                 )
             }
 
@@ -85,13 +91,40 @@ fun SignupScreen(
 
         CommonLoginButton(
             text = stringResource(Res.string.next_button),
-            onClick = { onNavigateToEmailVerification(email) },
-            enabled = email.isNotBlank(),
+            onClick = {
+                if (email.isNotBlank() && !isLoading) {
+                    isLoading = true
+
+                    coroutineScope.launch {
+                        when (authRepository.sendEmailVerification(email)) {
+                            is ApiResult.Success<*> -> {
+                                isLoading = false
+                                onNavigateToEmailVerification(email)
+                            }
+
+                            is ApiResult.Error -> {
+                                isLoading = false
+                            }
+                        }
+                    }
+                }
+            },
+            enabled = email.isNotBlank() && !isLoading,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(horizontal = 16.dp)
                 .padding(bottom = 52.dp)
         )
+
+        // 로딩 인디케이터
+        if (isLoading) {
+            CircularProgressIndicator(
+                color = Color(0xFFF89531),
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .size(48.dp)
+            )
+        }
     }
 }
 

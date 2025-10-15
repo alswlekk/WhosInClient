@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,14 +22,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.whosin.client.presentation.home.mock.PresentMember
+import org.whosin.client.presentation.home.PresentMemberUi
 import org.whosin.client.presentation.home.mock.sampleUsers
 import whosinclient.composeapp.generated.resources.Res
 import whosinclient.composeapp.generated.resources.current_empty
 
 @Composable
 fun PresentMembersList(
-    presentMemberList: List<PresentMember> = listOf(),
+    presentMemberList: List<PresentMemberUi> = listOf(),
     modifier: Modifier = Modifier,
 ) {
     val scrollState = rememberScrollState()
@@ -59,7 +58,7 @@ fun PresentMembersList(
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 presentMemberList.forEach { member ->
-                    PresentMembersItem(presentMemberNickName = member.nickname, isMe = member.isMe)
+                    PresentMembersItem(presentMemberNickName = member.userName, isMe = member.isMe)
                 }
             }
             Spacer(Modifier.height(20.dp))
