@@ -20,16 +20,16 @@ sealed interface Route {
     data object Signup: Route
 
     @Serializable
-    data object EmailVerification: Route
+    data class EmailVerification(val email: String): Route
 
     @Serializable
-    data object PasswordInput: Route
+    data class PasswordInput(val email: String): Route
 
     @Serializable
-    data object NicknameInput: Route
+    data class NicknameInput(val email: String, val password: String): Route
 
     @Serializable
-    data object ClubCodeInput: Route
+    data class ClubCodeInput(val returnToMyPage: Boolean = false): Route
 
     /* 메인 화면 */
     @Serializable
@@ -38,8 +38,4 @@ sealed interface Route {
     /* 마이 페이지 */
     @Serializable
     data object MyPage: Route
-
-    /* 내 정보 수정하기 */
-    @Serializable
-    data object UpdateMyInfo: Route
 }

@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import androidx.navigation.toRoute
 import org.whosin.client.presentation.auth.clubcode.ClubCodeInputScreen
 import org.whosin.client.presentation.auth.login.EmailVerificationScreen
 import org.whosin.client.presentation.auth.login.LoginScreen
@@ -15,7 +16,6 @@ import org.whosin.client.presentation.auth.login.PasswordInputScreen
 import org.whosin.client.presentation.auth.login.SignupScreen
 import org.whosin.client.presentation.auth.login.SplashScreen
 import org.whosin.client.presentation.home.HomeScreen
-import org.whosin.client.presentation.mypage.EditMyInfoScreen
 import org.whosin.client.presentation.mypage.MyPageScreen
 
 @Composable
@@ -37,6 +37,11 @@ fun WhosInNavGraph(
                     onNavigateToLogin = {
                         navController.navigate(Route.Login) {
                             popUpTo(Route.Splash) { inclusive = true }
+                        }
+                    },
+                    onNavigateToHome = {
+                        navController.navigate(Route.Home) {
+                            popUpTo(Route.AuthGraph) { inclusive = true }
                         }
                     }
                 )
@@ -74,49 +79,64 @@ fun WhosInNavGraph(
                     modifier = modifier,
                     onNavigateBack = { navController.navigateUp() },
                     onNavigateToEmailVerification = { email ->
-                        navController.navigate(Route.EmailVerification)
+                        navController.navigate(Route.EmailVerification(email))
                     }
                 )
             }
             
             composable<Route.EmailVerification> { backStackEntry ->
-                
+                val emailVerificationRoute = backStackEntry.toRoute<Route.EmailVerification>()
+
                 EmailVerificationScreen(
                     modifier = modifier,
+                    email = emailVerificationRoute.email,
                     onNavigateBack = { navController.navigateUp() },
                     onVerificationComplete = {
-                        navController.navigate(Route.PasswordInput)
+                        navController.navigate(Route.PasswordInput(emailVerificationRoute.email))
                     }
                 )
             }
-            
-            composable<Route.PasswordInput> {
+
+            composable<Route.PasswordInput> { backStackEntry ->
+                val passwordInputRoute = backStackEntry.toRoute<Route.PasswordInput>()
+
                 PasswordInputScreen(
                     modifier = modifier,
                     onNavigateBack = { navController.navigateUp() },
                     onPasswordComplete = { password, confirmPassword ->
-                        navController.navigate(Route.NicknameInput)
+                        navController.navigate(Route.NicknameInput(passwordInputRoute.email, password))
                     }
                 )
             }
-            
-            composable<Route.NicknameInput> {
+
+            composable<Route.NicknameInput> { backStackEntry ->
+                val nicknameInputRoute = backStackEntry.toRoute<Route.NicknameInput>()
+
                 NicknameInputScreen(
                     modifier = modifier,
+                    email = nicknameInputRoute.email,
+                    password = nicknameInputRoute.password,
                     onNavigateBack = { navController.navigateUp() },
                     onNavigateToClubCode = {
-                        navController.navigate(Route.ClubCodeInput)
+                        navController.navigate(Route.ClubCodeInput(returnToMyPage = false))
                     }
                 )
             }
             
-            composable<Route.ClubCodeInput> {
+            composable<Route.ClubCodeInput> { backStackEntry ->
+                val route = backStackEntry.toRoute<Route.ClubCodeInput>()
                 ClubCodeInputScreen(
                     modifier = modifier,
                     onNavigateBack = { navController.navigateUp() },
                     onNavigateToHome = {
-                        navController.navigate(Route.Home) {
-                            popUpTo(Route.AuthGraph) { inclusive = true }
+                        if (route.returnToMyPage) {
+                            // MyPage에서 온 경우 단순히 뒤로가기
+                            navController.navigateUp()
+                        } else {
+                            // 회원가입 플로우에서 온 경우 Home으로 이동
+                            navController.navigate(Route.Home) {
+                                popUpTo(Route.AuthGraph) { inclusive = true }
+                            }
                         }
                     }
                 )
@@ -127,7 +147,6 @@ fun WhosInNavGraph(
         composable<Route.Home> {
             HomeScreen(
                 modifier = modifier,
-                onNavigateBack = { navController.navigateUp() },
                 onNavigateToMyPage = {
                     navController.navigate(Route.MyPage)
                 }
@@ -140,23 +159,7 @@ fun WhosInNavGraph(
                 modifier = modifier,
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToAddClub = {
-
-                },
-                onNavigateToEdit = {
-                    navController.navigate(Route.UpdateMyInfo)
-                },
-            )
-        }
-
-        composable<Route.UpdateMyInfo> {
-            EditMyInfoScreen(
-                modifier = modifier,
-                onNavigateBack = { navController.navigateUp() },
-                onNavigateToMyPage = {
-                    navController.navigate(Route.MyPage) {
-                        popUpTo(Route.UpdateMyInfo) { inclusive = true }
-                        launchSingleTop = true
-                    }
+                    navController.navigate(Route.ClubCodeInput(returnToMyPage = true))
                 }
             )
         }

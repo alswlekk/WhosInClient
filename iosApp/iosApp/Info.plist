@@ -4,5 +4,19 @@
 <dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+    
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSExceptionDomains</key>
+        <dict>
+            <key>whosinroom.store</key>
+            <dict>
+                <key>NSIncludesSubdomains</key>
+                <true/>
+                <key>NSExceptionAllowsInsecureHTTPLoads</key>
+                <true/>
+            </dict>
+        </dict>
+    </dict>
 </dict>
 </plist>

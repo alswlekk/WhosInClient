@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -14,18 +16,33 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.viewmodel.koinViewModel
+import org.whosin.client.presentation.auth.login.viewmodel.SplashViewModel
 import whosinclient.composeapp.generated.resources.Res
 import whosinclient.composeapp.generated.resources.img_logo_white
 
 @Composable
 fun SplashScreen(
     modifier: Modifier = Modifier,
-    onNavigateToLogin: () -> Unit = {}
+    onNavigateToLogin: () -> Unit = {},
+    onNavigateToHome: () -> Unit = {},
+    viewModel: SplashViewModel = koinViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
-        delay(2000)
-        onNavigateToLogin()
+        delay(1500) // 스플래시 화면 표시 시간
+        viewModel.checkToken()
+    }
+
+    LaunchedEffect(uiState.isLoading) {
+        if (!uiState.isLoading) {
+            if (uiState.hasToken) {
+                onNavigateToHome()
+            } else {
+                onNavigateToLogin()
+            }
+        }
     }
 
     Box(

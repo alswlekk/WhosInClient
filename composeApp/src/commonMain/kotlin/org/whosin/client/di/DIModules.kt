@@ -5,14 +5,20 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 import org.whosin.client.core.network.HttpClientFactory
 import org.whosin.client.data.remote.DummyDataSource
+import org.whosin.client.data.remote.RemoteAuthDataSource
 import org.whosin.client.data.remote.RemoteClubDataSource
 import org.whosin.client.data.remote.RemoteMemberDataSource
+import org.whosin.client.data.repository.AuthRepository
 import org.whosin.client.data.repository.DummyRepository
 import org.whosin.client.data.repository.ClubRepository
 import org.whosin.client.data.repository.MemberRepository
+import org.whosin.client.presentation.auth.clubcode.AddClubViewModel
 import org.whosin.client.presentation.dummy.DummyViewModel
 import org.whosin.client.presentation.dummy.TokenTestViewModel
+import org.whosin.client.presentation.auth.login.viewmodel.FindPasswordViewModel
 import org.whosin.client.presentation.auth.login.viewmodel.LoginViewModel
+import org.whosin.client.presentation.auth.login.viewmodel.SignupViewModel
+import org.whosin.client.presentation.auth.login.viewmodel.SplashViewModel
 import org.whosin.client.presentation.home.HomeViewModel
 import org.whosin.client.presentation.mypage.MyPageViewModel
 
@@ -31,12 +37,14 @@ val httpClientModule = module {
 }
 
 val dataSourceModule = module {
+    single { RemoteAuthDataSource(get()) }
     single { RemoteMemberDataSource(get()) }
     single { RemoteClubDataSource(get()) }
     single { DummyDataSource(get()) } // TODO: 이후에 삭제 예정
 }
 
 val repositoryModule = module {
+    single { AuthRepository(get()) }
     single { MemberRepository(get()) }
     single { ClubRepository(get()) }
     single { DummyRepository(get()) } // TODO: 이후에 삭제 예정
@@ -44,9 +52,13 @@ val repositoryModule = module {
 
 // ViewModel을 새로 생성하는 경우에 모듈에 추가하여 사용
 val viewModelModule = module {
+    viewModelOf(::SplashViewModel)
     viewModelOf(::LoginViewModel)
+    viewModelOf(::SignupViewModel)
+    viewModelOf(::FindPasswordViewModel)
     viewModelOf(::HomeViewModel)
     viewModelOf(::MyPageViewModel)
     viewModelOf(::DummyViewModel) // TODO: 이후에 삭제 예정
     viewModelOf(::TokenTestViewModel) // TODO: 이후에 삭제 예정
+    viewModelOf(::AddClubViewModel)
 }
